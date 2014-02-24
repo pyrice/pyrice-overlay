@@ -34,3 +34,4 @@ EOF
 	make_desktop_entry ${exe} "WiMP" /opt/airapps/wimp/wimpIcon.png "AudioVideo;Player"
 }
 
+
