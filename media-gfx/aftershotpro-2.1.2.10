@@ -17,7 +17,7 @@ SRC_URI="
 	x86? ( ${ABI32_URL} )
 "
 
-LICENSE="AfterShotPro"
+LICENSE="aftershotpro"
 SLOT="2"
 KEYWORDS="~x86 ~amd64"
 
