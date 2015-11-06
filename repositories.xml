@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<repositories version="1.0">
+  <repo priority="50" quality="experimental" status="unofficial">
+    <name>pyrice</name>
+    <description>Personal overlay for stuff not available somewhere else.</description>
+    <homepage>http://github.com/pyrice/</homepage>
+    <owner>
+      <email>pyrice@gmail.com</email>
+    </owner>
+    <source type="git">https://github.com/pyrice/pyrice-overlay.git</source>
+  </repo>
+</repositories>
