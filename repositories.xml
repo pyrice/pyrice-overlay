@@ -3,7 +3,7 @@
   <repo priority="50" quality="experimental" status="unofficial">
     <name>pyrice</name>
     <description>Personal overlay for stuff not available somewhere else.</description>
-    <homepage>http://github.com/pyrice/</homepage>
+    <homepage>https://github.com/pyrice/</homepage>
     <owner>
       <email>pyrice@gmail.com</email>
     </owner>
