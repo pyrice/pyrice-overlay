@@ -26,7 +26,7 @@ MY_PN="p4v"
 S=${WORKDIR}
 
 RDEPEND="
-    dev-qt/qtgui:4
+    dev-qt/qtgui:5
 "
 
 src_install() {
