@@ -24,9 +24,9 @@ RESTRICT="mirror"
 
 DEPEND=""
 RDEPEND="media-libs/libpng:2
-	>=dev-libs/glib
+	dev-libs/glib
 	sys-libs/zlib
-	=11-libs/cairo
+	11-libs/cairo
 	x11-libs/gdk-pixbuf:2
 	x11-libs/gtk+:3
 	x11-libs/libSM
