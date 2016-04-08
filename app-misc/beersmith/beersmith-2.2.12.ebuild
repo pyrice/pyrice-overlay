@@ -23,16 +23,16 @@ IUSE=""
 RESTRICT="mirror"
 
 DEPEND=""
-RDEPEND="media-libs/libpng:2
+RDEPEND="media-libs/libpng
 	dev-libs/glib
 	sys-libs/zlib
 	x11-libs/cairo
-	x11-libs/gdk-pixbuf:2
-	x11-libs/gtk+:3
+	x11-libs/gdk-pixbuf
+	x11-libs/gtk+
 	x11-libs/libSM
 	x11-libs/libX11
 	x11-libs/pango
-	net-libs/webkit-gtk:3
+	net-libs/webkit-gtk
 	"
 
 S="${WORKDIR}"
