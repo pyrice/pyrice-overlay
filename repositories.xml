@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <repositories version="1.0">
   <repo priority="50" quality="experimental" status="unofficial">
-    <name>pyrice</name>
+    <name>pyrice-overlay</name>
     <description>Personal overlay for stuff not available somewhere else.</description>
     <homepage>https://github.com/pyrice/</homepage>
     <owner>
