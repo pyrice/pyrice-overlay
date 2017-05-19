@@ -18,6 +18,7 @@ pkg_setup()
 {
         enewgroup openhab
         enewuser openhab -1 -1 $OPENHAB_HOME "uucp,openhab"
+        echo @{S}
 }
 src_install() 
 {
