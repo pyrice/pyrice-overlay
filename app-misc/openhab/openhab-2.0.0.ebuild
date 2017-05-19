@@ -11,7 +11,7 @@ KEYWORDS="~amd64 ~x86"
 IUSE=""
 DEPEND="=virtual/jdk-1.8
         app-arch/unzip
-        =virtual/jre:1.8"
+        virtual/jre:1.8"
 RDEPEND="${DEPEND}"
 pkg_setup()
 {
