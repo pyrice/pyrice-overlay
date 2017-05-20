@@ -3,7 +3,11 @@
 EAPI=6
 inherit user
 MY_PN=openhab
+echo ${S}
+echo ${WORKDIR}
+echo ${PORTAGE_BUILDDIR}
 OPENHAB_HOME="/opt/openhab"
+#WORKDIR="${PORTAGE_BUILDDIR}"
 DESCRIPTION="OpenHAB home automation, base package without bindings etc."
 HOMEPAGE="http://www.openhab.org"
 SRC_URI="https://bintray.com/openhab/mvn/download_file?file_path=org/${MY_PN}/distro/${MY_PN}/${PV}/${MY_PN}-${PV}.tar.gz"
@@ -19,7 +23,6 @@ pkg_setup()
 {
         enewgroup openhab
         enewuser openhab -1 -1 $OPENHAB_HOME "uucp,openhab"
-        echo ${S}
 }
 src_install() 
 {
