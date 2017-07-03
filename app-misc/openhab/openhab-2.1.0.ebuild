@@ -3,6 +3,7 @@
 EAPI=6
 inherit user
 MY_PN=openhab
+S=${WORKDIR}
 echo ${S}
 echo ${WORKDIR}
 echo ${PORTAGE_BUILDDIR}
