@@ -30,9 +30,6 @@ src_install()
 	exeinto "${OPENHAB_HOME}"/runtime/bin/
 	doexe runtime/bin/karaf
         fowners -R openhab:openhab ${OPENHAB_HOME}
-#	fperms +x start.sh
-#	fperms +x runtime/bin/karaf
-#	ls -la
 default
 	systemd_dounit "${FILESDIR}"/openhab2.service
 }
