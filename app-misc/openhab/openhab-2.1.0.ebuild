@@ -25,25 +25,14 @@ src_install()
         dodir $OPENHAB_HOME
         insinto "${OPENHAB_HOME}"/
         doins -r * || die "doins failed"
+	exeinto "${OPENHAB_HOME}"/
+	doexe start.sh
+	exeinto "${OPENHAB_HOME}"/runtime/bin/
+	doexe runtime/bin/karaf
         fowners -R openhab:openhab ${OPENHAB_HOME}
-}
-#src_configure()
-#{
-#	--with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
-#	#econf \
- #       #"$(systemd_with_unitdir)"
-#	#systemd_install_serviced <conf-file> [<service.d>]
-#}
-
-src_configure() 
-{
-#local myconf=(
- #       --enable-openhab2
-  #      --with-systemdsystemunitdir="$(systemd_get_systemunitdir)"
-#)
-#
-#econf "${myconf[@]}"
+#	fperms +x start.sh
+#	fperms +x runtime/bin/karaf
+#	ls -la
 default
-	echo ${FILESDIR}
-    systemd_dounit "${FILESDIR}"/../openhab2.service
+	systemd_dounit "${FILESDIR}"/openhab2.service
 }
