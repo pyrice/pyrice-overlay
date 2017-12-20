@@ -10,15 +10,13 @@ SHORTREL=${REL/#20/}
 
 DESCRIPTION="Perforce version control system p4 client"
 HOMEPAGE="http://www.perforce.com/"
-SRC_URI="x86? ( ftp://ftp.perforce.com/perforce/r${SHORTREL}/bin.linux26x86/p4 \
-			-> ${PF}-x86 )
-	    amd64? (
-		ftp://ftp.perforce.com/perforce/r${SHORTREL}/bin.linux26x86_64/p4 \
+SRC_URI="amd64? (
+		ftp://ftp.perforce.com/perforce/r${SHORTREL}/bin.linux26x86_64/p4v.tgz \
 		    -> ${PF}-amd64 )"
 
 LICENSE="perforce"
 SLOT="0"
-KEYWORDS="-* ~x86 ~amd64"
+KEYWORDS="-* ~amd64"
 IUSE=""
 RESTRICT="mirror strip"
 
