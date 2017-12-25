@@ -11,7 +11,8 @@ LICENSE="EPL"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
-DEPEND="virtual/jdk:1.8
+DEPEND="dev-java/oracle-jre-bin:1.8
+	virtual/jdk:1.8
         app-arch/unzip
         virtual/jre:1.8"
 RDEPEND="${DEPEND}"
