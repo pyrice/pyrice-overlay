@@ -32,7 +32,7 @@ RDEPEND="media-libs/libpng:1.2
  	x11-libs/libSM
  	x11-libs/libX11
  	x11-libs/pango
- 	net-libs/webkit-gtk:2
+ 	>=net-libs/webkit-gtk:2
  	"
 S="${WORKDIR}"
 QA_PREBUILT="opt/bin/beersmith2"
