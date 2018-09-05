@@ -23,7 +23,7 @@ DEPEND="x11-libs/cairo
       x11-libs/libXxf86vm
       dev-libs/openssl
       x11-libs/pango
-      net-libs/webkit-gtk:2
+      net-libs/webkit-gtk
       sys-libs/zlib"
 RDEPEND="${DEPEND}"
 src_install() 
@@ -31,11 +31,4 @@ src_install()
         dodir $BEERSMITH_HOME
         insinto "${BEERSMITH_HOME}"/
         doins -r * || die "doins failed"
-	exeinto "${BEERSMITH_HOME}"/
-	doexe start.sh
-	exeinto "${BEERSMITH_HOME}"/runtime/bin/
-	doexe runtime/bin/karaf
-        fowners -R openhab:openhab ${OPENHAB_HOME}
-default
-	systemd_dounit "${FILESDIR}"/openhab2.service
 }
