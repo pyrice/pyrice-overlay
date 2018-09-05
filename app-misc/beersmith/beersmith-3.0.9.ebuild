@@ -1,7 +1,7 @@
 # Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 EAPI=6
-inherit utils unpacker
+inherit
 S=${WORKDIR}
 BEERSMITH_HOME="/opt/beersmith3"
 DESCRIPTION="Beersmith 3 Home Brewing Software"
