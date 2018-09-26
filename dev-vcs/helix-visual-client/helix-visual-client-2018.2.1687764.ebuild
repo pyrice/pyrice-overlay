@@ -5,7 +5,7 @@ EAPI=7
 
 inherit ver_* eutils
 
-REL=$(get_version_component_range 1-2)
+REL=$(get_version_component_range 2-3)
 SHORTREL=${REL/#20/}
 
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
