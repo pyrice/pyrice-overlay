@@ -3,7 +3,7 @@
 # $Header$
 EAPI=7
 
-inherit versionator eutils
+inherit ver_* eutils
 
 REL=$(get_version_component_range 1-2)
 SHORTREL=${REL/#20/}
