@@ -5,13 +5,10 @@ EAPI=7
 
 inherit ver_* eutils
 
-REL=$(get_version_component_range 2-3)
-SHORTREL=${REL/#20/}
-
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
 SRC_URI="amd64? (
-		http://www.perforce.com/downloads/perforce/r${SHORTREL}/bin.linux26x86_64/p4v.tgz \
+		http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/p4v.tgz \
 		    -> ${PF}-amd64 )"
 
 LICENSE="perforce"
