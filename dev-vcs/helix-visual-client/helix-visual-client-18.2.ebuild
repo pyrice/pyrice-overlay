@@ -27,5 +27,5 @@ src_unpack() {
 }
 
 src_install() {
-	dobin p4 || die
+	into /opt/helix-visual-client-${PV}
 }
