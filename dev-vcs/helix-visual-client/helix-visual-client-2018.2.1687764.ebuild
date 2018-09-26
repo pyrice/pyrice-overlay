@@ -8,7 +8,7 @@ inherit versionator eutils
 REL=$(get_version_component_range 1-2)
 SHORTREL=${REL/#20/}
 
-DESCRIPTION="Perforce version control system p4 client"
+DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
 SRC_URI="amd64? (
 		http://www.perforce.com/downloads/perforce/r${SHORTREL}/bin.linux26x86_64/p4v.tgz \
