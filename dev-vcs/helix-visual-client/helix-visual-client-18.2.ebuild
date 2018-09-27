@@ -3,7 +3,7 @@
 # $Header$
 EAPI=7
 
-inherit ver_* eutils
+inherit eutils
 
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
