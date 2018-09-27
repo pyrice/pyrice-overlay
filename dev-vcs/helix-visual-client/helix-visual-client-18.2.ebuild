@@ -31,5 +31,5 @@ src_unpack() {
 
 src_install() {
 	insinto /opt/helix-visual-client-${PV}
-	doins p4 p4v
+	doins bin/p4 bin/p4v
 }
