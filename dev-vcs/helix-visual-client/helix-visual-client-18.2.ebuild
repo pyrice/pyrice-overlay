@@ -1,6 +1,5 @@
 # Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Header$
 EAPI=7
 
 inherit eutils
@@ -26,7 +25,7 @@ src_unpack() {
 	# we have to copy all of the files from $DISTDIR, otherwise we get
 	# sandbox violations when trying to install
 
-	cp ${DISTDIR}/${A} p4
+	cp ${DISTDIR}/${A} "p4"
 }
 
 src_install() {
