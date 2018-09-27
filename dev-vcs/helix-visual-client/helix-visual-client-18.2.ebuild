@@ -30,6 +30,6 @@ src_unpack() {
 }
 
 src_install() {
-	insinto /opt/helix-visual-client-${PV}
-	doins -r p4 p4v
+	into /opt/helix-visual-client-${PV}
+	dobin -r p4 p4v
 }
