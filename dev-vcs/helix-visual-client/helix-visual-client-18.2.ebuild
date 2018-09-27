@@ -17,6 +17,9 @@ KEYWORDS="-* ~amd64"
 IUSE=""
 RESTRICT="mirror strip"
 
+DEPEND="dev-qt/qtcore:5"
+RDEPEND="${DEPEND}"
+
 S=${WORKDIR}
 
 src_unpack() {
