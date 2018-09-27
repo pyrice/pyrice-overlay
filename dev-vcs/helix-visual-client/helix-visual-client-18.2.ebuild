@@ -28,4 +28,5 @@ src_unpack() {
 
 src_install() {
 	into /opt/helix-visual-client-${PV}
+	dobin p4 p4v
 }
