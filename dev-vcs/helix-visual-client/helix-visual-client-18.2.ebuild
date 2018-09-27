@@ -31,5 +31,5 @@ src_unpack() {
 
 src_install() {
 	into /opt/helix-visual-client-${PV}
-	dobin -r p4 p4v
+	dobin p4 p4v
 }
