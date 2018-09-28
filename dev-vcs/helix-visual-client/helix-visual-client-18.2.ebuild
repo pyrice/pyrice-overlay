@@ -17,8 +17,8 @@ KEYWORDS="-* ~amd64"
 IUSE=""
 RESTRICT="mirror strip"
 
-DEPEND="dev-qt/qtcore:5"
-RDEPEND="${DEPEND}"
+DEPEND=""
+RDEPEND="dev-qt/qtcore:5 ${DEPEND}"
 
 S=${WORKDIR}
 
@@ -30,6 +30,6 @@ src_unpack() {
 }
 
 src_install() {
-	into /opt/helix-visual-client-${PV}
-	dobin p4
+	dodir /usr/bin/helix-visual-client-${PV}
+	cp -R "${S}/" "${D}/usr/bin/" || die "Install failed!"
 }
