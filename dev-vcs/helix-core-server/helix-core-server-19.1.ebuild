@@ -22,13 +22,6 @@ RDEPEND="${DEPEND}"
 
 S=${WORKDIR}
 
-src_unpack() {
-	# we have to copy all of the files from $DISTDIR, otherwise we get
-	# sandbox violations when trying to install
-
-	cp ${DISTDIR}/${A} "p4"
-}
-
 src_install() {
 	dobin p4 || die "Install failed!"
 }
