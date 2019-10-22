@@ -7,9 +7,7 @@ inherit eutils
 
 DESCRIPTION="Perforce version control system Helix Command-line Client (P4)"
 HOMEPAGE="http://www.perforce.com/"
-SRC_URI="amd64? (
-    http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/helix-core-server.tgz \
-		    -> ${PF}-amd64 )"
+SRC_URI="http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/helix-core-server.tgz"
 
 LICENSE="perforce"
 SLOT="0"
