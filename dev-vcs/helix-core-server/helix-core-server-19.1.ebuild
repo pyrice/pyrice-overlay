@@ -30,6 +30,5 @@ src_unpack() {
 }
 
 src_install() {
-	dodir /usr/bin/helix-core-server-client-${PV}
-	cp -R "${S}/" "${D}/usr/bin/" || die "Install failed!"
+	dobin p4 || die "Install failed!"
 }
