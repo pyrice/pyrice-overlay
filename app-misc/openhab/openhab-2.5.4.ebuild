@@ -11,7 +11,7 @@ LICENSE="EPL"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
-DEPEND="dev-java/icedtea-bin:1.8
+DEPEND="dev-java/icedtea-bin:8
 	virtual/jdk:1.8
         app-arch/unzip
         virtual/jre:1.8"
