@@ -6,7 +6,7 @@ S=${WORKDIR}
 OPENHAB_HOME="/opt/openhab2"
 DESCRIPTION="OpenHAB 2.5.4 snapshot home automation, base package without bindings etc."
 HOMEPAGE="http://www.openhab.org"
-SRC_URI="https://openhab.ci.cloudbees.com/job/openHAB-Distribution/lastSuccessfulBuild/artifact/distributions/openhab/target/${PN}-${PV}-SNAPSHOT.tar.gz"
+SRC_URI="https://bintray.com/openhab/mvn/download_file?file_path=org%2Fopenhab%2Fdistro%2F${PN}%2F${PV}%2F${PN}-${PV}.tar.gz"
 LICENSE="EPL"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
