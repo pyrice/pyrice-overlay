@@ -1,17 +1,17 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 EAPI=6
 inherit user systemd
 S=${WORKDIR}
 OPENHAB_HOME="/opt/openhab2"
-DESCRIPTION="OpenHAB 2.2.0 snapshot home automation, base package without bindings etc."
+DESCRIPTION="OpenHAB 2.5.4 snapshot home automation, base package without bindings etc."
 HOMEPAGE="http://www.openhab.org"
 SRC_URI="https://openhab.ci.cloudbees.com/job/openHAB-Distribution/lastSuccessfulBuild/artifact/distributions/openhab/target/${PN}-${PV}-SNAPSHOT.tar.gz"
 LICENSE="EPL"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
-DEPEND="dev-java/oracle-jre-bin:1.8
+DEPEND="dev-java/icedtea-bin:1.8
 	virtual/jdk:1.8
         app-arch/unzip
         virtual/jre:1.8"
