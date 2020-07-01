@@ -14,7 +14,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
  
-DEPEND=">=dev-util/cmake:3.5
+DEPEND=">=dev-util/cmake-3.5
         >=sci-libs/fftw:3
         =dev-libs/libusb:1
         >=dev-qt/qtcore:5.4
