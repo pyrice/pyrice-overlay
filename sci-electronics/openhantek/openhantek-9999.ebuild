@@ -3,7 +3,7 @@
  
 EAPI=7
  
-inherit toolchain-funcs git-r3 cmake-tools
+inherit toolchain-funcs git-r3
 
 DESCRIPTION="OpenHantek DSO software"
 HOMEPAGE="https://github.com/OpenHantek/openhantek"
