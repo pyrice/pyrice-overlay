@@ -32,9 +32,9 @@ src_unpack() {
 
 src_install() {
 	into /opt/${PN}
-        dobin p4v-*/bin/*
+        dobin p4 p4v-*/bin/*
 	insinto /opt/${PN}
-	doins -r p4v-*/lib
+	doins -r p4 p4v-*/lib
 	dosym /opt/${PN}/bin/p4v /usr/bin/p4v
 	doicon p4v-*/lib/P4VResources/icons/p4v.svg
 	make_desktop_entry p4v p4v /usr/share/pixmaps/p4v.svg  
