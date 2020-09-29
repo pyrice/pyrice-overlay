@@ -32,8 +32,8 @@ src_unpack() {
 
 src_install() {
 	into /opt/${PN}
-        dobin p4-*/bin/*
+        dobin p4
 	insinto /opt/${PN}
-	doins -r p4-*/lib
+	doins -r p4
 	dosym /opt/${PN}/bin/p4 /usr/bin/p4  
 }
