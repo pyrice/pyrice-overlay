@@ -19,6 +19,8 @@ RDEPEND="
 	virtual/jack"
 DEPEND="${RDEPEND}"
 
+PATCHES=( "${FILESDIR}"/${P}-ld.patch )
+
 src_compile() {
 	tc-export AS CC
 	emake
