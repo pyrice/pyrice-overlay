@@ -24,7 +24,7 @@ RDEPEND="
 	gnome-base/gsettings-desktop-schemas[introspection]
 	x11-libs/gtk+:3
 	x11-libs/vte:2.91[introspection]
-	dev-libs/keybinder
+	dev-libs/keybinder:3[introspection]
 "
 BDEPEND="
 	dev-util/intltool
