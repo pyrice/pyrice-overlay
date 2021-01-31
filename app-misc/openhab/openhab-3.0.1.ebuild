@@ -8,7 +8,7 @@ DESCRIPTION="OpenHAB 3.0.1 Stable home automation, base package without bindings
 HOMEPAGE="http://www.openhab.org"
 SRC_URI="https://bintray.com/openhab/mvn/download_file?file_path=org%2Fopenhab%2Fdistro%2F${PN}%2F${PV}%2F${PN}-${PV}.tar.gz"
 LICENSE="EPL"
-SLOT="0"
+SLOT="3"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 DEPEND="dev-java/openjdk:11
