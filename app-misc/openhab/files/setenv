@@ -35,7 +35,7 @@
 # The following section shows the possible configuration options for the default 
 # karaf scripts
 #
-# export JAVA_HOME # Location of Java installation
+export JAVA_HOME="/usr/lib64/openjdk-11" # Location of Java installation
 # export JAVA_MIN_MEM # Minimum memory for the JVM
 # export JAVA_MAX_MEM # Maximum memory for the JVM
 # export JAVA_PERM_MEM # Minimum perm memory for the JVM
@@ -77,13 +77,13 @@ fi
 if [ ! -z ${OPENHAB_HTTP_PORT} ]; then
     HTTP_PORT=${OPENHAB_HTTP_PORT}
 else
-    HTTP_PORT=8080
+    HTTP_PORT=8081
 fi
 
 if [ ! -z ${OPENHAB_HTTPS_PORT} ]; then
     HTTPS_PORT=${OPENHAB_HTTPS_PORT}
 else
-    HTTPS_PORT=8443
+    HTTPS_PORT=18443
 fi
 
 # set the Java debug port with a wildcard, so that it is bound to all interfaces
@@ -148,7 +148,8 @@ locateJava() {
         JAVA_HOME="$(/usr/libexec/java_home -v 11)"
     fi
     if [ "x${JAVA}" = "x" ] && [ -r /etc/gentoo-release ] ; then
-        JAVA_HOME=$(java-config --jre-home)
+        #JAVA_HOME=$(java-config --jre-home)
+	JAVA_HOME="/usr/lib64/openjdk-11"
     fi
     if [ "x${JAVA}" = "x" ]; then
         if [ "x${JAVA_HOME}" != "x" ]; then

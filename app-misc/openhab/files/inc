@@ -184,6 +184,7 @@ pathCanonical() {
 
 locateJava() {
     # Setup the Java Virtual Machine
+    JAVA_HOME="/usr/lib64/openjdk-11/"
     if ${cygwin} ; then
         [ -n "${JAVA}" ] && JAVA=`cygpath --unix "${JAVA}"`
         [ -n "${JAVA_HOME}" ] && JAVA_HOME=`cygpath --unix "${JAVA_HOME}"`
@@ -193,7 +194,8 @@ locateJava() {
         JAVA_HOME="`/usr/libexec/java_home -v 1.8`"
     fi
     if [ "x${JAVA_HOME}" = "x" ] && [ -r /etc/gentoo-release ] ; then
-        JAVA_HOME=`java-config --jre-home`
+        JAVA_HOME="/usr/lib64/openjdk-11/"
+	#JAVA_HOME=`java-config --jre-home`
     fi
     if [ "x${JAVA}" = "x" ]; then
         if [ "x${JAVA_HOME}" != "x" ]; then
