@@ -1,12 +1,12 @@
 # Copyright 1999-2021 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 EAPI=7
-inherit user systemd
+inherit user systemd git-r3
 S=${WORKDIR}
 OPENHAB_HOME="/opt/openhab"
-DESCRIPTION="OpenHAB 3.1.0 Stable home automation, base package without bindings etc."
+DESCRIPTION="OpenHAB latest Stable home automation, base package without bindings etc."
 HOMEPAGE="https://www.openhab.org"
-SRC_URI="https://openhab.jfrog.io/native/libs-release-local/org/openhab/distro/openhab/3.1.0/openhab-3.1.0.tar.gz"
+EGIT_REPO_URI="https://github.com/openhab/openhab-distro.git"
 LICENSE="EPL"
 SLOT="3"
 KEYWORDS="~amd64 ~x86"
