@@ -3,7 +3,9 @@
  
 EAPI=8
 
-inherit cmake cmake-utils
+inherit cmake
+
+MY_P="${P}-Source"
  
 DESCRIPTION="ECMWF Metview software"
 HOMEPAGE="https://confluence.ecmwf.int/display/METV/Metview"
@@ -12,7 +14,7 @@ SRC_URI="https://confluence.ecmwf.int/download/attachments/3964985/${PN}-${PV}-S
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="-magics -mars logs"
+IUSE="magics mars logs"
  
 DEPEND="dev-qt/qtcore:5 app-shells/bash sci-libs/netcdf net-misc/curl
 sys-libs/gdbm sci-libs/eccodes"
@@ -23,28 +25,45 @@ BDEPEND="sys-devel/gcc
     sys-devel/flex
     sys-devel/bison"
 
-RESTRICT="!test? ( test )"
+RESTRICT=""
 
 S="${WORKDIR}/${MY_P}"
+
+BUILD_DIR="${WORKDIR}/build"
 
 CMAKE_BUILD_TYPE=RelWithDebInfo
 
 src_configure() {
-	local mycmakeargs=(
-		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
-    -DENABLE_UI=ON
-    -DENABLE_PLOTTING=$(usex magics ON OFF)
-    -DENABLE_MARS=$(usex mars ON OFF)
-    -DENABLE_USAGE_LOGS=$(usex logs ON OFF)
-    -DLOG_DIR="~/.log/metview"
-    -DECCODES_PATH="/usr/share/eccodes"
-    -DMAGICS_PATH="/usr/local/"
-	)
-	cmake_src_configure
+    local mycmakeargs=(
+        -DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
+        -DENABLE_UI=ON
+        -DENABLE_PLOTTING=$(usex magics ON OFF)
+        -DENABLE_MARS=$(usex mars ON OFF)
+        -DENABLE_USAGE_LOGS=$(usex logs ON OFF)
+        -DLOG_DIR="~/.log/metview"
+        -DECCODES_PATH="/usr/share/eccodes"
+        -DMAGICS_PATH="/usr/local/"
+    )
+    cmake_src_configure
 }
 
 src_install() {
-	cmake_src_install
+    cmake_src_install
+    if [[ -f Makefile || -f GNUmakefile || -f makefile ]] ; then
+        emake DESTDIR="${D}" install
+    fi
+
+    if ! declare -p DOCS &>/dev/null ; then
+        local d
+        for d in README* ChangeLog AUTHORS NEWS TODO CHANGES \
+                 THANKS BUGS FAQ CREDITS CHANGELOG ; do
+            [[ -s "${d}" ]] && dodoc "${d}"
+        done
+    elif [[ $(declare -p DOCS) == "declare -a "* ]] ; then
+        dodoc "${DOCS[@]}"
+    else
+        dodoc ${DOCS}
+    fi
 }
 
 src_test() {
