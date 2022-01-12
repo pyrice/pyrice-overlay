@@ -5,7 +5,7 @@ EAPI=8
 
 inherit cmake
 
-MY_P="${P}-Source"
+MY_P="Metview-${PV}-Source"
  
 DESCRIPTION="ECMWF Metview software"
 HOMEPAGE="https://confluence.ecmwf.int/display/METV/Metview"
@@ -14,16 +14,17 @@ SRC_URI="https://confluence.ecmwf.int/download/attachments/3964985/${PN}-${PV}-S
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="-magics -mars logs"
+IUSE="magics mars logs"
  
 DEPEND="dev-qt/qtcore:5 app-shells/bash sci-libs/netcdf net-misc/curl
-sys-libs/gdbm sci-libs/eccodes"
+sys-libs/gdbm"
 RDEPEND="magics? ( sci-geosciences/magics ) ${DEPEND}"
 BDEPEND="sys-devel/gcc
     sys-devel/make
     dev-util/cmake
     sys-devel/flex
-    sys-devel/bison"
+    sys-devel/bison
+    >=sci-libs/eccodes-2.22.1"
 
 RESTRICT=""
 
@@ -41,7 +42,7 @@ src_configure() {
         -DENABLE_MARS=$(usex mars ON OFF)
         -DENABLE_USAGE_LOGS=$(usex logs ON OFF)
         -DLOG_DIR="~/.log/metview"
-        -DECCODES_PATH="/usr/share/eccodes"
+        -DECCODES_PATH="/usr/share/eccodes/"
         -DMAGICS_PATH="/usr/local/"
     )
     cmake_src_configure
