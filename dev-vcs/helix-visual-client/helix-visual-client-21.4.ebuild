@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit eutils desktop
+inherit desktop
 
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
