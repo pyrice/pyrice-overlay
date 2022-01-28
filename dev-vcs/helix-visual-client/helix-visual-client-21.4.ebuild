@@ -21,7 +21,7 @@ DEPEND=""
 RDEPEND="dev-qt/qtcore:5 ${DEPEND}"
 BDEPEND=""
 
-INSTALL_TO="/opt/p4v"
+INSTALL_TO="/opt/${PN}"
 S=${WORKDIR}
 
 src_unpack() {
