@@ -19,7 +19,9 @@ RESTRICT="mirror strip"
 
 DEPEND=""
 RDEPEND="dev-qt/qtcore:5 ${DEPEND}"
+BDEPEND=""
 
+INSTALL_TO="/opt/p4v"
 S=${WORKDIR}
 
 src_unpack() {
