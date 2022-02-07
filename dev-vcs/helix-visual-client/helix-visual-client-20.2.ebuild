@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Foundation
+# Copyright 2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -25,17 +25,18 @@ S=${WORKDIR}
 src_unpack() {
 	# we have to copy all of the files from $DISTDIR, otherwise we get
 	# sandbox violations when trying to install
-	if [ "${A}" != "" ]; then
+	if [ ${A} != "" ]; then
 		unpack ${A}
 	fi
 }
 
 src_install() {
 	into /opt/${PN}
-        dobin p4v-*/bin/*
+	dobin p4v-*/bin/*
 	insinto /opt/${PN}
+	insopts -m0655
 	doins -r p4v-*/lib
-	dosym /opt/${PN}/bin/p4v /usr/bin/p4v
+	dosym bin/p4v /usr/bin/p4v
 	doicon p4v-*/lib/P4VResources/icons/p4v.svg
-	make_desktop_entry p4v p4v /usr/share/pixmaps/p4v.svg  
+	make_desktop_entry p4v p4v /usr/share/pixmaps/p4v.svg
 }
