@@ -18,7 +18,7 @@ IUSE=""
 RESTRICT="mirror strip"
 
 DEPEND=""
-RDEPEND="dev-qt/qtcore:5 ${DEPEND}"
+RDEPEND="x11-libs/libxcb ${DEPEND}"
 BDEPEND=""
 
 INSTALL_TO="/opt/${PN}"
