@@ -43,7 +43,6 @@ src_install() {
 		"p4merge"
 		"p4v"
 		"p4vc"
-		"p4"
 	)
 	for t in "${targets[@]}"; do
 		dosym "../../${INSTALL_TO#/}/bin/${t}" "/usr/bin/${t}"
