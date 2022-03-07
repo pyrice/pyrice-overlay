@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
+<pkgmetadata>
+        <maintainer type="person">
+                <email>andersson.kent@gmail.com</email>
+                <name>Kent Andersson</name>
+        </maintainer>
+        <longdescription>Command line client for Perforce version control — Helix Core — tracks and manages changes to your source code, digital assets, and large binary files. It creates a single source of truth and collaboration platform that helps teams move faster, even as they develop complex products with thousands of contributors.</longdescription>
+</pkgmetadata>
