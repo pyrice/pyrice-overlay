@@ -40,7 +40,6 @@ src_install() {
 	dosym bin/p4 /usr/bin/p4
 	local targets=(
 		"p4"
-		"p4d"
 	)
 	for t in "${targets[@]}"; do
 		dosym "../../${INSTALL_TO#/}/bin/${t}" "/usr/bin/${t}"
