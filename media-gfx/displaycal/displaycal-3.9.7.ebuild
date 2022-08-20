@@ -6,7 +6,7 @@ PYTHON_COMPAT=( python3_{8..10} )
 DISTUTILS_USE_PEP517=setuptools
 DISTUTILS_IN_SOURCE_BUILD=1
 
-inherit distutils-r1 gnome2-utils xdg
+inherit distutils-r1 xdg
 
 MY_PN="DisplayCAL"
 MY_P="${MY_PN}-${PV}"
@@ -29,13 +29,12 @@ DEPEND="
 	dev-python/pillow:0[${PYTHON_USEDEP}]
 	dev-python/pychromecast[${PYTHON_USEDEP}]
 	dev-python/send2trash:0[${PYTHON_USEDEP}]
-	>=dev-python/wxpython-4.1.1[${PYTHON_USEDEP}]
+	>=dev-python/wxpython-4.0.7-r2:4.0[${PYTHON_USEDEP}]
 	dev-python/zeroconf[${PYTHON_USEDEP}]
 	>=x11-libs/libX11-1.3.3
 	>=x11-apps/xrandr-1.3.2
 	>=x11-libs/libXxf86vm-1.1.0
 	>=x11-libs/libXinerama-1.1
-	!!media-gfx/displaycal
 "
 RDEPEND="${DEPEND}
 	dev-python/numpy[${PYTHON_USEDEP}]
