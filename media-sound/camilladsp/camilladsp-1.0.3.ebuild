@@ -8,49 +8,49 @@ EAPI=8
 CRATES="
 	adler-1.0.2
 	aho-corasick-0.5.3
-	aho-corasick-0.7.18
+	aho-corasick-0.7.20
 	alsa-0.6.0
 	alsa-sys-0.3.1
 	ansi_term-0.12.1
-	anyhow-1.0.57
+	anyhow-1.0.68
 	atty-0.2.14
 	autocfg-1.1.0
-	base64-0.13.0
-	bindgen-0.59.2
+	base64-0.13.1
+	bindgen-0.61.0
 	bitflags-1.3.2
 	block-buffer-0.9.0
 	bstr-0.2.17
-	bumpalo-3.9.1
+	bumpalo-3.11.1
 	byteorder-1.4.3
-	bytes-1.1.0
+	bytes-1.3.0
 	bzip2-0.4.3
 	bzip2-sys-0.1.11+1.0.8
-	cast-0.2.7
-	cc-1.0.73
+	cast-0.3.0
+	cc-1.0.78
 	cesu8-1.1.0
 	cexpr-0.6.0
 	cfg-if-1.0.0
 	chrono-0.2.25
-	clang-sys-1.3.2
+	clang-sys-1.4.0
 	clap-2.34.0
-	combine-4.6.4
+	combine-4.6.6
 	core-foundation-0.9.3
 	core-foundation-sys-0.6.2
 	core-foundation-sys-0.8.3
 	coreaudio-rs-0.10.0
-	coreaudio-rs-0.11.1
-	coreaudio-sys-0.2.10
+	coreaudio-rs-0.11.2
+	coreaudio-sys-0.2.11
 	cpal-0.13.5
-	cpufeatures-0.2.2
+	cpufeatures-0.2.5
 	crc32fast-1.3.2
-	criterion-0.3.5
-	criterion-plot-0.4.4
-	crossbeam-0.8.1
-	crossbeam-channel-0.5.4
-	crossbeam-deque-0.8.1
-	crossbeam-epoch-0.9.8
-	crossbeam-queue-0.3.5
-	crossbeam-utils-0.8.8
+	criterion-0.3.6
+	criterion-plot-0.4.5
+	crossbeam-0.8.2
+	crossbeam-channel-0.5.6
+	crossbeam-deque-0.8.2
+	crossbeam-epoch-0.9.13
+	crossbeam-queue-0.3.8
+	crossbeam-utils-0.8.14
 	csv-1.1.6
 	csv-core-0.1.10
 	darling-0.13.4
@@ -58,170 +58,170 @@ CRATES="
 	darling_macro-0.13.4
 	digest-0.9.0
 	dispatch-0.2.0
-	either-1.6.1
-	fastrand-1.7.0
+	either-1.8.0
+	fastrand-1.8.0
 	fftw-0.7.0
 	fftw-src-0.3.3
 	fftw-sys-0.6.0
-	flate2-1.0.23
+	flate2-1.0.25
 	flexi_logger-0.19.6
 	fnv-1.0.7
 	foreign-types-0.3.2
 	foreign-types-shared-0.1.1
-	form_urlencoded-1.0.1
+	form_urlencoded-1.1.0
 	fs_extra-1.2.0
 	ftp-3.0.1
-	generic-array-0.14.5
-	getrandom-0.2.6
+	generic-array-0.14.6
+	getrandom-0.2.8
 	glob-0.3.0
 	half-1.8.2
-	hashbrown-0.11.2
+	hashbrown-0.12.3
 	hermit-abi-0.1.19
-	http-0.2.7
-	httparse-1.7.1
+	http-0.2.8
+	httparse-1.8.0
 	ident_case-1.0.1
-	idna-0.2.3
-	indexmap-1.8.1
+	idna-0.3.0
+	indexmap-1.9.2
 	instant-0.1.12
-	itertools-0.10.3
+	itertools-0.10.5
 	itoa-0.4.8
-	itoa-1.0.2
+	itoa-1.0.5
 	jack-0.8.4
 	jack-sys-0.2.3
 	jni-0.19.0
 	jni-sys-0.3.0
-	jobserver-0.1.24
-	js-sys-0.3.57
+	jobserver-0.1.25
+	js-sys-0.3.60
 	kernel32-sys-0.2.2
 	lazy_static-0.1.16
 	lazy_static-1.4.0
 	lazycell-1.3.0
-	libc-0.2.126
+	libc-0.2.138
 	libloading-0.6.7
-	libloading-0.7.3
-	libm-0.2.2
+	libloading-0.7.4
+	libm-0.2.6
 	libpulse-binding-2.26.0
 	libpulse-simple-binding-2.25.0
 	libpulse-simple-sys-1.19.2
 	libpulse-sys-1.19.3
-	linked-hash-map-0.5.4
-	lock_api-0.4.7
+	linked-hash-map-0.5.6
+	lock_api-0.4.9
 	log-0.4.17
 	mach-0.3.2
-	matches-0.1.9
 	matrixmultiply-0.2.4
 	memchr-0.1.11
 	memchr-2.5.0
 	memoffset-0.6.5
+	memoffset-0.7.1
 	minimal-lexical-0.2.1
-	miniz_oxide-0.5.1
-	native-tls-0.2.10
+	miniz_oxide-0.6.2
+	native-tls-0.2.11
 	ndarray-0.14.0
 	ndk-0.6.0
 	ndk-context-0.1.1
 	ndk-glue-0.6.2
 	ndk-macro-0.3.0
 	ndk-sys-0.3.0
-	nix-0.23.1
+	nix-0.23.2
 	nom-7.1.1
 	num-0.1.42
 	num-complex-0.3.1
-	num-complex-0.4.1
+	num-complex-0.4.2
 	num-derive-0.3.3
 	num-integer-0.1.45
 	num-iter-0.1.43
 	num-traits-0.2.15
-	num_cpus-1.13.1
+	num_cpus-1.14.0
 	num_enum-0.5.7
 	num_enum_derive-0.5.7
 	num_threads-0.1.6
 	oboe-0.4.6
 	oboe-sys-0.4.5
-	once_cell-1.12.0
+	once_cell-1.16.0
 	oorandom-11.1.3
 	opaque-debug-0.3.0
-	openssl-0.10.40
+	openssl-0.10.44
 	openssl-macros-0.1.0
 	openssl-probe-0.1.5
-	openssl-sys-0.9.73
+	openssl-sys-0.9.79
 	parking_lot-0.11.2
-	parking_lot_core-0.8.5
+	parking_lot_core-0.8.6
 	peeking_take_while-0.1.2
-	percent-encoding-2.1.0
-	pkg-config-0.3.25
-	plotters-0.3.1
-	plotters-backend-0.3.2
-	plotters-svg-0.3.1
-	ppv-lite86-0.2.16
-	primal-check-0.3.1
-	proc-macro-crate-1.1.3
-	proc-macro2-1.0.39
-	quote-1.0.18
+	percent-encoding-2.2.0
+	pkg-config-0.3.26
+	plotters-0.3.4
+	plotters-backend-0.3.4
+	plotters-svg-0.3.3
+	ppv-lite86-0.2.17
+	primal-check-0.3.3
+	proc-macro-crate-1.2.1
+	proc-macro2-1.0.49
+	quote-1.0.23
 	rand-0.8.5
 	rand_chacha-0.3.1
-	rand_core-0.6.3
+	rand_core-0.6.4
 	rand_distr-0.4.3
 	rawpointer-0.2.1
 	rawsample-0.2.0
-	rayon-1.5.3
-	rayon-core-1.9.3
-	realfft-3.0.0
-	redox_syscall-0.2.13
+	rayon-1.6.1
+	rayon-core-1.10.1
+	realfft-3.2.0
+	redox_syscall-0.2.16
 	regex-0.1.80
-	regex-1.5.6
+	regex-1.7.0
 	regex-automata-0.1.10
 	regex-syntax-0.3.9
-	regex-syntax-0.6.26
+	regex-syntax-0.6.28
 	remove_dir_all-0.5.3
 	rubato-0.12.0
 	rustc-hash-1.1.0
-	rustc_version-0.4.0
-	rustfft-6.0.1
-	rustversion-1.0.6
-	ryu-1.0.10
+	rustfft-6.1.0
+	rustversion-1.0.11
+	ryu-1.0.12
 	same-file-1.0.6
 	schannel-0.1.20
 	scopeguard-1.1.0
-	security-framework-2.6.1
+	security-framework-2.7.0
 	security-framework-sys-2.6.1
-	semver-1.0.9
-	serde-1.0.137
+	serde-1.0.151
 	serde_cbor-0.11.2
-	serde_derive-1.0.137
-	serde_json-1.0.81
-	serde_with-1.13.0
+	serde_derive-1.0.151
+	serde_json-1.0.91
+	serde_with-1.14.0
 	serde_with_macros-1.5.2
-	serde_yaml-0.8.24
+	serde_yaml-0.8.26
 	sha-1-0.9.8
 	shlex-1.1.0
 	signal-hook-0.3.14
 	signal-hook-registry-1.4.0
-	smallvec-1.8.0
+	smallvec-1.10.0
 	stdweb-0.1.3
-	strength_reduce-0.2.3
+	strength_reduce-0.2.4
 	strsim-0.8.0
 	strsim-0.10.0
-	syn-1.0.95
+	syn-1.0.107
 	tempfile-3.3.0
 	textwrap-0.11.0
-	thiserror-1.0.31
-	thiserror-impl-1.0.31
+	thiserror-1.0.38
+	thiserror-impl-1.0.38
 	thread-id-2.0.0
 	thread_local-0.2.7
-	time-0.1.43
-	time-0.3.9
+	time-0.1.45
+	time-0.3.17
+	time-core-0.1.0
+	time-macros-0.2.6
 	tinytemplate-1.2.1
 	tinyvec-1.6.0
 	tinyvec_macros-0.1.0
-	toml-0.5.9
-	transpose-0.2.1
+	toml-0.5.10
+	transpose-0.2.2
 	tungstenite-0.16.0
-	typenum-1.15.0
+	typenum-1.16.0
 	unicode-bidi-0.3.8
-	unicode-ident-1.0.0
-	unicode-normalization-0.1.19
-	unicode-width-0.1.9
-	url-2.2.2
+	unicode-ident-1.0.6
+	unicode-normalization-0.1.22
+	unicode-width-0.1.10
+	url-2.3.1
 	utf-8-0.7.6
 	utf8-ranges-0.1.3
 	vcpkg-0.2.15
@@ -229,13 +229,14 @@ CRATES="
 	version_check-0.9.4
 	walkdir-2.3.2
 	wasapi-0.12.0
-	wasi-0.10.2+wasi-snapshot-preview1
-	wasm-bindgen-0.2.80
-	wasm-bindgen-backend-0.2.80
-	wasm-bindgen-macro-0.2.80
-	wasm-bindgen-macro-support-0.2.80
-	wasm-bindgen-shared-0.2.80
-	web-sys-0.3.57
+	wasi-0.10.0+wasi-snapshot-preview1
+	wasi-0.11.0+wasi-snapshot-preview1
+	wasm-bindgen-0.2.83
+	wasm-bindgen-backend-0.2.83
+	wasm-bindgen-macro-0.2.83
+	wasm-bindgen-macro-support-0.2.83
+	wasm-bindgen-shared-0.2.83
+	web-sys-0.3.60
 	widestring-0.5.1
 	winapi-0.2.8
 	winapi-0.3.9
@@ -266,11 +267,11 @@ inherit cargo
 DESCRIPTION="A flexible tool for processing audio"
 # Double check the homepage as the cargo_metadata crate
 # does not provide this value so instead repository is used
-HOMEPAGE="homepage field in Cargo.toml inaccessible to cargo metadata"
-SRC_URI="$(cargo_crate_uris)"
+HOMEPAGE="https://github.com/HEnquist/camilladsp"
+SRC_URI="https://github.com/HEnquist/camilladsp/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz $(cargo_crate_uris)"
 
 # License set may be more restrictive as OR is not respected
 # use cargo-license for a more accurate license picture
-LICENSE="0BSD Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0 GPL-2+ ISC MIT Unlicense ZLIB"
+LICENSE="0BSD Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0 GPL-2+ ISC MIT Unicode-DFS-2016 Unlicense ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
