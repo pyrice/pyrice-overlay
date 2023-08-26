@@ -276,7 +276,26 @@ LICENSE="0BSD Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0 GPL-2+ ISC MIT
 SLOT="0"
 KEYWORDS="~amd64"
 
+DEPEND=""
+RDEPEND="${DEPEND}"
+BDEPEND=""
+
 src_install() {
-	default
+#	default
+#	export CARGO_HOME="${ECARGO_HOME}"
+#	local args=$(usex debug "" --release)
+#
+#	if use capi; then
+#		cargo cinstall $args \
+#			--prefix="/usr" --libdir="/usr/$(get_libdir)" --destdir="${ED}" \
+#			|| die "cargo cinstall failed"
+#	fi
+#
+	cargo_src_install
 	systemd_dounit "${FILESDIR}"/"${PN}".service
 }
+
+
+# rust does not use *FLAGS from make.conf, silence portage warning
+# update with proper path to binaries this crate installs, omit leading /
+QA_FLAGS_IGNORED="usr/bin/${PN}"
