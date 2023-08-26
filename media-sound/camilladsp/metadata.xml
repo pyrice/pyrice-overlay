@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
 <pkgmetadata>
-        <maintainer type="person">
-                <email>andersson.kent@gmail.com</email>
-                <name>Kent Andersson</name>
-        </maintainer>
-        <longdescription>A tool to create audio processing pipelines for applications such as active crossovers or room correction. It is written in Rust to benefit from the safety and elegant handling of threading that this language provides.</longdescription>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<maintainer>
+			<email>henrik.enquist@gmail.com</email>
+			<name>Henrik Enquist</name>
+		</maintainer>
+		<remote-id type="github">HEnquist/camilladsp</remote-id>
+	</upstream>	
+	<longdescription>A tool to create audio processing pipelines for applications such as active crossovers or room correction. It is written in Rust to benefit from the safety and elegant handling of threading that this language provides.</longdescription>
 </pkgmetadata>

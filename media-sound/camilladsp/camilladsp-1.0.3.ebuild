@@ -262,7 +262,7 @@ CRATES="
 	zip-0.5.13
 "
 
-inherit cargo
+inherit cargo systemd
 
 DESCRIPTION="A flexible tool for processing audio"
 # Double check the homepage as the cargo_metadata crate
@@ -275,3 +275,8 @@ SRC_URI="https://github.com/HEnquist/camilladsp/archive/refs/tags/v${PV}.tar.gz 
 LICENSE="0BSD Apache-2.0-with-LLVM-exceptions BSD BSD-2 Boost-1.0 GPL-2+ ISC MIT Unicode-DFS-2016 Unlicense ZLIB"
 SLOT="0"
 KEYWORDS="~amd64"
+
+src_install() {
+	default
+	systemd_dounit "${FILESDIR}"/"${PN}".service
+}
