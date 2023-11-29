@@ -5,14 +5,11 @@ EAPI=8
 
 inherit desktop wrapper
 
-DESCRIPTION="A complete toolset for C and C++ development"
-HOMEPAGE="https://www.jetbrains.com/clion/"
-SRC_URI="https://download.jetbrains.com/cpp/CLion-${PV}.tar.gz"
+DESCRIPTION="JetBrains IDE for Rust Developers"
+HOMEPAGE="https://www.jetbrains.com/rust/"
+SRC_URI="https://download.jetbrains.com/rust/RustRover-${PV}.tar.gz"
 
-LICENSE="|| ( IDEA IDEA_Academic IDEA_Classroom IDEA_OpenSource IDEA_Personal )
-	Apache-1.1 Apache-2.0 BSD BSD-2 CC0-1.0 CDDL-1.1 CPL-0.5 CPL-1.0
-	EPL-1.0 EPL-2.0 GPL-2 GPL-2-with-classpath-exception GPL-3 ISC JDOM
-	LGPL-2.1+ LGPL-3 MIT MPL-1.0 MPL-1.1 OFL public-domain PSF-2 UoI-NCSA ZLIB"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64"
 RESTRICT="bindist mirror splitdebug"
@@ -33,6 +30,7 @@ RDEPEND="
 	media-libs/mesa
 	net-print/cups
 	sys-apps/dbus
+	sys-devel/clang
 	sys-devel/gdb
 	sys-libs/zlib
 	x11-libs/cairo
