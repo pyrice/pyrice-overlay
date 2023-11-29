@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit desktop xdg
+inherit xdg
 
 DESCRIPTION="JetBrains IDE manager"
 HOMEPAGE="https://www.jetbrains.com/toolbox-app/"
@@ -33,10 +33,6 @@ src_install() {
 	keepdir /opt/jetbrains-toolbox
 	insinto /opt/jetbrains-toolbox
 	doins jetbrains-toolbox
-
-	newicon "${FILESDIR}/${PN}.svg" "${PN}.svg"
-
-	domenu "${FILESDIR}/${PN}.desktop"
 
 	fperms +x /opt/jetbrains-toolbox/jetbrains-toolbox
 }
