@@ -1,20 +1,21 @@
-# Copyright 2022 Gentoo Authors
+# Copyright 2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 inherit systemd
 S=${WORKDIR}
 OPENHAB_HOME="/opt/openhab"
-DESCRIPTION="OpenHAB 3.2.0 Stable home automation, base package without bindings etc."
+DESCRIPTION="OpenHAB 4.0.4 Stable home automation, base package without bindings etc."
 HOMEPAGE="https://www.openhab.org"
 SRC_URI="
 https://www.openhab.org/download/releases/org/openhab/distro/openhab/${PV}/${PN}-${PV}.zip"
 LICENSE="EPL-2.0"
-SLOT="3"
+SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
-DEPEND="dev-java/openjdk:11
+DEPEND="dev-java/openjdk:17
 "
+BDEPEND="app-arch/unzip"
 RDEPEND="${DEPEND}"
 pkg_setup()
 {
