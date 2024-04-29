@@ -3,7 +3,7 @@
 
 EAPI=8
 
-inherit kodi-addon
+inherit #kodi-addon
 
 DESCRIPTION="Kodi's Adaptive inputstream addon"
 HOMEPAGE="https://github.com/xbmc/inputstream.adaptive.git"
