@@ -1,14 +1,14 @@
 # Copyright 2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit eutils desktop
+inherit desktop
 
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
 SRC_URI="amd64? (
-		http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/p4v.tgz \
+	http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/p4v.tgz \
 		    -> ${PF}-amd64.tgz )"
 
 LICENSE="perforce"
@@ -18,8 +18,10 @@ IUSE=""
 RESTRICT="mirror strip"
 
 DEPEND=""
-RDEPEND="dev-qt/qtcore:5 ${DEPEND}"
+RDEPEND="x11-libs/libxcb ${DEPEND}"
+BDEPEND=""
 
+INSTALL_TO="/opt/${PN}"
 S=${WORKDIR}
 
 src_unpack() {
@@ -36,6 +38,21 @@ src_install() {
 	insinto /opt/${PN}
 	doins -r p4v-*/lib
 	dosym bin/p4v /usr/bin/p4v
+	local targets=(
+		"p4admin"
+		"p4merge"
+		"p4v"
+		"p4vc"
+	)
+	for t in "${targets[@]}"; do
+		dosym "../../${INSTALL_TO#/}/bin/${t}" "/usr/bin/${t}"
+	done
 	doicon p4v-*/lib/P4VResources/icons/p4v.svg
 	make_desktop_entry p4v p4v /usr/share/pixmaps/p4v.svg
+}
+
+pkg_postinst() {
+	ewarn "Perforce only provides the latest patch revisions. The SRC_URI may contain"
+	ewarn "a tarball that no longer matches the hashes in the Manifest when installing"
+	ewarn "another time!"
 }
