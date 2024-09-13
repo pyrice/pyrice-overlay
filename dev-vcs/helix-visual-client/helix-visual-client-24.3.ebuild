@@ -18,7 +18,7 @@ IUSE=""
 RESTRICT="mirror strip"
 
 DEPEND=""
-RDEPEND="x11-libs/libxcb ${DEPEND}"
+RDEPEND="x11-libs/libxcb x11-libs/xcb-util-cursor ${DEPEND}"
 BDEPEND=""
 
 INSTALL_TO="/opt/${PN}"
