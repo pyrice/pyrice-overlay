@@ -3,8 +3,6 @@
 
 EAPI=8
 
-inherit desktop
-
 DESCRIPTION="Perforce version control system Helix command line Client (P4)"
 HOMEPAGE="https://www.perforce.com/"
 SRC_URI="amd64? (
