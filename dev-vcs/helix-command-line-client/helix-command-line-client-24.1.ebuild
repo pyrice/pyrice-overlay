@@ -6,10 +6,11 @@ EAPI=8
 inherit desktop
 
 DESCRIPTION="Perforce version control system Helix command line Client (P4)"
-HOMEPAGE="http://www.perforce.com/"
+HOMEPAGE="https://www.perforce.com/"
 SRC_URI="amd64? (
-	http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/helix-core-server.tgz \
+	https://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/helix-core-server.tgz \
 		    -> ${PF}-amd64.tgz )"
+S=${WORKDIR}
 
 LICENSE="perforce"
 SLOT="0"
@@ -22,7 +23,6 @@ RDEPEND="${DEPEND}"
 BDEPEND=""
 
 INSTALL_TO="/opt/${PN}"
-S=${WORKDIR}
 
 src_unpack() {
 	# we have to copy all of the files from $DISTDIR, otherwise we get
