@@ -7,7 +7,8 @@ inherit xdg-utils desktop systemd
 
 DESCRIPTION="GlobalProtect VPN GUI based on OpenConnect with SAML auth mode support"
 HOMEPAGE="https://github.com/yuezk/GlobalProtect-openconnect"
-SRC_URI="https://github.com/yuezk/GlobalProtect-openconnect/releases/download/v${PV}/${P}.tar.gz"
+SRC_URI="https://github.com/yuezk/GlobalProtect-openconnect/releases/download/v${PV}/${P}.tar.gz
+	https://localhost/distfiles/${P}-vendor.tar.xz"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -15,11 +16,14 @@ KEYWORDS="~amd64"
 IUSE="+gnome kde"
 
 DEPEND="
-	virtual/rust
+	|| (
+	dev-lang/rust
+	dev-lang/rust-bin
+	)
 	dev-lang/perl
 	sys-auth/polkit
 	net-vpn/openconnect
-	net-libs/webkit-gtk:4
+	net-libs/webkit-gtk:4.1=
 	net-libs/libsoup:2.4
 	dev-libs/libayatana-appindicator
 	net-misc/curl
@@ -29,9 +33,31 @@ DEPEND="
 "
 
 RDEPEND="${DEPEND}"
+BDEPEND="app-misc/jq"
+
+src_unpack() {
+	default
+	mkdir -p "${S}/vendor" || die
+	tar -xf "${DISTDIR}/${P}-vendor.tar.xz" -C "${S}/vendor" --strip-components=1 || die "Failed to unpack vendor"
+}
 
 src_compile() {
-	emake build BUILD_FE=0
+	# Konfigurera cargo att använda local vendor dir
+	export CARGO_HOME="${S}/.cargo"
+	mkdir -p "${CARGO_HOME}" || die
+	cat > "${CARGO_HOME}/config.toml" <<EOF
+[source.crates-io]
+replace-with = "vendored-sources"
+
+[source.vendored-sources]
+directory = "${S}/vendor"
+EOF
+	[[ $? -ne 0 ]] && die "Failed to write cargo config"
+
+	# Kör bygget (utan nätverk)
+	cargo build --release -p gpclient -p gpservice -p gpauth || die "Rust build failed"
+	cargo build --release -p gpgui-helper --features "tauri/custom-protocol" || die "GUI build failed"
+
 }
 
 src_install() {
