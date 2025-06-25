@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andersson.kent@gmail.com</email>
+    <name>Kent Andersson</name>
+  </maintainer>
+  <longdescription>A GUI for GlobalProtect VPN, based on OpenConnect, supports the SSO authentication method. Inspired by gp-saml-gui.</longdescription>
+  <upstream>
+    <remote-id type="github">yuezk/GlobalProtect-openconnect</remote-id>
+  </upstream>
+</pkgmetadata>

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=GlobalProtect VPN
+Comment=Connect to a GlobalProtect VPN using OpenConnect
+Exec=gpclient launch-gui
+Icon=network-vpn
+Terminal=false
+Type=Application
+Categories=Network;Security;GNOME;Qt;
+StartupNotify=true
