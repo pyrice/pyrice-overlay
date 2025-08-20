@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andersson.kent@gmail.com</email>
+    <name>Kent Andersson</name>
+  </maintainer>
+  <longdescription>Web-browser based authentication for openconnect Ivanti/Pulse Secure VPN services SSO.</longdescription>
+  <upstream>
+    <remote-id type="github">markus-meier74/openconnect-pulse-gui</remote-id>
+  </upstream>
+</pkgmetadata>
