@@ -16,6 +16,16 @@ KEYWORDS="amd64 ~x86"
 PATCHES=( )
 S="${WORKDIR}"
 
+src_unpack() {
+    # Packa upp zip-filen (ger yt6801-1.0.30.tar.gz + yt_nic_install.sh i $WORKDIR)
+    default
+
+    # Skapa src-katalog och packa upp tarballen dit
+    mkdir src || die "failed to create src directory"
+    tar -xzf "${WORKDIR}/${PN}-${PV}.tar.gz" \
+        -C src || die "failed to unpack inner tarball"
+}
+
 src_compile() {
 	local modlist=(
 		${PN}=src:src
