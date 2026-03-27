@@ -1,0 +1,26 @@
+[Unit]
+Description=Reports data collection service
+After=network-online.target postgresql.service
+Wants=network-online.target
+StartLimitBurst=8
+StartLimitIntervalSec=10h
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/reports fetch -v --config-file /etc/reports/config.toml --key-file /etc/reports/keys/.encryption_key
+User=reports
+Group=reports
+
+# Retry logic if data is not available
+Restart=on-failure
+RestartSec=1h
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/reports
+
+[Install]
+WantedBy=multi-user.target

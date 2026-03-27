@@ -1,0 +1,24 @@
+# Example configuration file for the reports application
+# Copy this file to config.toml and update with your actual values
+
+[database]
+host = "localhost"
+port = 5432
+username = "pgusername"
+# This password is encrypted. Use the --encrypt-password flag to generate an encrypted password
+password_encrypted = "ENCRYPTED_PASSWORD_HERE"
+database = "elpriser"
+
+[sources]
+# Primary data source: "elprisetjustnu" or "entsoe"
+primary = "elprisetjustnu"
+# Fallback sources (tried in order if primary fails)
+fallback = []
+# Default Swedish electricity zone: SE1, SE2, SE3, or SE4
+default_zone = "SE1"
+
+[api_keys]
+# ENTSO-E API key (encrypted, optional - only needed if using entsoe source)
+# Get your API key at: https://transparency.entsoe.eu/
+# Use the --encrypt-password flag to encrypt your API key
+# entsoe_encrypted = "ENCRYPTED_API_KEY_HERE"
