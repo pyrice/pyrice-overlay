@@ -1,0 +1,13 @@
+[Unit]
+Description=Brewfather API Query Timer
+Documentation=https://github.com/pyrice/brewfather-api-query
+
+[Timer]
+# Run daily at 3:00 AM
+OnCalendar=daily
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=5m
+
+[Install]
+WantedBy=timers.target

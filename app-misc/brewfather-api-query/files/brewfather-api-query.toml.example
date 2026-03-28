@@ -1,0 +1,12 @@
+# Brewfather API Query Configuration
+#
+# To encrypt your credentials, run:
+#   brewfather-api-query --key-file /var/lib/brewfather-api-query/.brewfather_key --encrypt-user-id YOUR_USER_ID
+#   brewfather-api-query --key-file /var/lib/brewfather-api-query/.brewfather_key --encrypt-api-key YOUR_API_KEY
+
+[brewfather]
+# Encrypted Brewfather User ID (get from https://web.brewfather.app/tabs/settings)
+user_id_encrypted = "YOUR_ENCRYPTED_USER_ID_HERE"
+
+# Encrypted Brewfather API Key (get from https://web.brewfather.app/tabs/settings)
+api_key_encrypted = "YOUR_ENCRYPTED_API_KEY_HERE"

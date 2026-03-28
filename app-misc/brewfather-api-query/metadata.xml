@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>kent@pyrice.org</email>
+		<name>Kent Asplund</name>
+	</maintainer>
+	<longdescription lang="en">
+		A command-line tool for querying the Brewfather API v2 endpoints.
+		Supports fetching batches, recipes, and inventory data with
+		encrypted credential storage and systemd timer integration.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">pyrice/brewfather-api-query</remote-id>
+	</upstream>
+	<use>
+		<flag name="systemd">Install systemd service and timer units</flag>
+	</use>
+</pkgmetadata>
