@@ -23,7 +23,7 @@ LICENSE="GPL-2+ MS-TOU"
 SLOT="0"
 KEYWORDS="~amd64"
 
-RESTRICT="bindist mirror test"
+RESTRICT="mirror test"
 
 BDEPEND="app-arch/cabextract"
 
@@ -33,17 +33,21 @@ MODULES_KERNEL_MIN=6.5
 src_unpack() {
 	unpack ${P}.tar.gz
 
-	cabextract -F FW_ACC_00U.bin -d "${S}/xone_firmware_02fe" \
-		"${DISTDIR}/${PN}-firmware-02fe.cab" > /dev/null || die
-	cabextract -F FW_ACC_00U.bin -d "${S}/xone_firmware_02e6" \
-		"${DISTDIR}/${PN}-firmware-02e6.cab" > /dev/null || die
-	cabextract -F FW_ACC_CL.bin -d "${S}/xone_firmware_02f9" \
-		"${DISTDIR}/${PN}-firmware-02f9.cab" > /dev/null || die
-	cabextract -F FW_ACC_BR.bin -d "${S}/xone_firmware_091e" \
-		"${DISTDIR}/${PN}-firmware-091e.cab" > /dev/null || die
+	# Extract Microsoft binary firmware from Windows Update cabinet files.
+	# Each cabinet contains a single FW_ACC_*.bin file for a specific dongle PID.
+	cabextract -F 'FW_ACC_00U.bin' -d "${S}/xone_firmware_02fe" \
+		"${DISTDIR}/${PN}-firmware-02fe.cab" || die
+	cabextract -F 'FW_ACC_00U.bin' -d "${S}/xone_firmware_02e6" \
+		"${DISTDIR}/${PN}-firmware-02e6.cab" || die
+	cabextract -F 'FW_ACC_CL.bin' -d "${S}/xone_firmware_02f9" \
+		"${DISTDIR}/${PN}-firmware-02f9.cab" || die
+	cabextract -F 'FW_ACC_BR.bin' -d "${S}/xone_firmware_091e" \
+		"${DISTDIR}/${PN}-firmware-091e.cab" || die
 }
 
 src_prepare() {
+	# Upstream does not ship a Makefile compatible with out-of-tree builds;
+	# use a custom one from FILESDIR instead.
 	cp "${FILESDIR}/Makefile" "${S}" || die
 	default
 }
@@ -59,7 +63,6 @@ src_compile() {
 		xone_gip_madcatz_strat=kernel/drivers/input/joystick
 		xone_gip_madcatz_glam=kernel/drivers/input/joystick
 		xone_gip_pdp_jaguar=kernel/drivers/input/joystick
-
 	)
 
 	linux-mod-r1_src_compile
@@ -72,10 +75,25 @@ src_install() {
 	insinto /etc/modprobe.d/
 	newins "${S}"/install/modprobe.conf xone-blacklist.conf
 
-	einfo "Installing Microsoft binary firmware"
+	# Install firmware under the exact filenames the built module requests.
+	# The names are read from the .ko itself so they stay correct across
+	# upstream renames without any changes to this ebuild.
+	einfo "Installing Microsoft binary firmware (required for wireless dongle)"
 	insinto /lib/firmware/
-	newins "${S}"/xone_firmware_02e6/FW_ACC_00U.bin xow_dongle_045e_02e6.bin
-	newins "${S}"/xone_firmware_02fe/FW_ACC_00U.bin xow_dongle_045e_02fe.bin
-	newins "${S}"/xone_firmware_02f9/FW_ACC_CL.bin  xow_dongle_045e_02f9.bin
-	newins "${S}"/xone_firmware_091e/FW_ACC_BR.bin  xow_dongle_045e_091e.bin
+
+	local name pid src
+	while IFS= read -r name; do
+		pid="${name%.bin}"
+		pid="${pid##*_}"
+		src=( "${S}"/xone_firmware_${pid}/*.bin )
+		[[ -f ${src[0]} ]] || die "No firmware found for PID ${pid} (${name})"
+		newins "${src[0]}" "${name}"
+	done < <(strings dongle/xone-dongle.ko | grep -E '^xow_dongle[_0-9a-f]*\.bin$')
+}
+
+pkg_postinst() {
+	linux-mod-r1_pkg_postinst
+
+	elog "If using the wireless dongle, unplug and replug it for the"
+	elog "new firmware filenames to take effect."
 }
