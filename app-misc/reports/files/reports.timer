@@ -1,0 +1,10 @@
+[Unit]
+Description=Run reports daily at 13:00
+Requires=reports.service
+
+[Timer]
+OnCalendar=*-*-* 13:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
