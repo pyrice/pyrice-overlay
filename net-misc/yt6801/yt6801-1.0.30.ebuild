@@ -13,7 +13,9 @@ LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 ~x86"
 
-PATCHES=( )
+PATCHES=(                                                                                                                                                                                                                                                                               
+        "${FILESDIR}/yt6801-1.0.30-kernel-6.15-timer-api.patch"                                                                                                                                                                                                                           
+  )
 S="${WORKDIR}"
 
 src_unpack() {
