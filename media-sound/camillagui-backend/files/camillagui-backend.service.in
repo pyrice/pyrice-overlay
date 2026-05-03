@@ -1,0 +1,14 @@
+[Unit]
+Description=CamillaGUI Backend
+Documentation=https://github.com/HEnquist/camillagui-backend
+After=network.target camilladsp.service
+Wants=camilladsp.service
+
+[Service]
+ExecStart=@PYTHON@ /usr/share/camillagui-backend/main.py
+WorkingDirectory=/usr/share/camillagui-backend
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

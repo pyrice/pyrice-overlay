@@ -1,0 +1,12 @@
+[Unit]
+Description=CamillaDSP
+Documentation=https://github.com/HEnquist/camilladsp
+After=sound.target
+
+[Service]
+ExecStart=/usr/bin/camilladsp @WEBSOCKET@/etc/camilladsp/config.yml
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

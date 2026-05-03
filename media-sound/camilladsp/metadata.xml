@@ -11,6 +11,15 @@
 			<name>Henrik Enquist</name>
 		</maintainer>
 		<remote-id type="github">HEnquist/camilladsp</remote-id>
-	</upstream>	
+	</upstream>
 	<longdescription>A tool to create audio processing pipelines for applications such as active crossovers or room correction. It is written in Rust to benefit from the safety and elegant handling of threading that this language provides.</longdescription>
+	<use>
+		<flag name="bluetooth">Enable BlueZ Bluetooth audio backend</flag>
+		<flag name="gui">Enable WebSocket control interface for GUI tools</flag>
+		<flag name="jack">Enable JACK audio backend</flag>
+		<flag name="pipewire">Enable PipeWire audio backend</flag>
+		<flag name="pulseaudio">Enable PulseAudio backend</flag>
+		<flag name="ssl">Enable TLS support for the WebSocket interface</flag>
+		<flag name="threaded-alsa">Use a separate thread for ALSA playback</flag>
+	</use>
 </pkgmetadata>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<maintainer>
+			<email>henrik.enquist@gmail.com</email>
+			<name>Henrik Enquist</name>
+		</maintainer>
+		<remote-id type="github">HEnquist/camillagui-backend</remote-id>
+	</upstream>
+	<longdescription>Web-based GUI backend for CamillaDSP, providing a browser interface for managing audio processing pipelines.</longdescription>
+</pkgmetadata>
