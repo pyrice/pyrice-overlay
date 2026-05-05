@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andersson.kent@gmail.com</email>
+    <name>Kent Andersson</name>
+  </maintainer>
+  <longdescription>
+    Yazi (means "duck") is a terminal file manager written in Rust, based on
+    non-blocking async I/O. It provides an efficient, user-friendly, and highly
+    customizable file management experience with built-in image preview,
+    syntax highlighting, archive browsing, and a Lua plugin system.
+
+    Ships two binaries: yazi (the file manager) and ya (the CLI helper for
+    inter-instance communication and package management).
+  </longdescription>
+  <upstream>
+    <remote-id type="github">sxyazi/yazi</remote-id>
+  </upstream>
+</pkgmetadata>
