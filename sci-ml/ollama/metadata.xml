@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="blas">Enable BLAS support for optimized linear algebra</flag>
+		<flag name="blis">Use <pkg>sci-libs/blis</pkg> as BLAS provider</flag>
+		<flag name="cuda">Enable NVIDIA CUDA GPU acceleration</flag>
+		<flag name="flexiblas">Use <pkg>sci-libs/flexiblas</pkg> as BLAS provider</flag>
+		<flag name="mkl">Use <pkg>sci-libs/mkl</pkg> for BLAS, LAPACK, and sparse BLAS routines</flag>
+		<flag name="openblas">Use <pkg>sci-libs/openblas</pkg> as BLAS provider</flag>
+		<flag name="rocm">Enable AMD ROCm/HIP GPU acceleration</flag>
+		<flag name="vulkan">Enable Vulkan GPU backend</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">ollama/ollama</remote-id>
+	</upstream>
+</pkgmetadata>
