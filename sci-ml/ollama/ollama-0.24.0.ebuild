@@ -360,4 +360,11 @@ pkg_postinst() {
 		einfo "When using cuda the user running ${PN} has to be in the video group or it won't detect devices."
 		einfo "The ebuild ensures this for user ${PN} via acct-user/${PN}[cuda]"
 	fi
+
+	if use vulkan; then
+		einfo "For Intel Arc GPU acceleration, ensure:"
+		einfo "  VIDEO_CARDS=\"intel\" in /etc/portage/make.conf"
+		einfo "  media-libs/mesa rebuilt with the 'vulkan' USE flag enabled"
+		einfo "Intel Arc uses the ANV Vulkan driver (libvulkan_intel.so) at runtime."
+	fi
 }
