@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">ggml-org/llama.cpp</remote-id>
+	</upstream>
+	<longdescription>
+		llama.cpp enables LLM inference with minimal setup and state-of-the-art
+		performance on a wide variety of hardware. Supports CPU (with SIMD
+		variants), Vulkan, SYCL/Level Zero (Intel Arc), CUDA (NVIDIA), and
+		ROCm/HIP (AMD) backends.
+	</longdescription>
+	<use>
+		<flag name="blas">Enable BLAS for accelerated matrix operations on CPU</flag>
+		<flag name="blis">Use BLIS as the BLAS backend</flag>
+		<flag name="cuda">Build NVIDIA CUDA GPU backend</flag>
+		<flag name="examples">Build example binaries (llama-bench, llama-simple, etc.)</flag>
+		<flag name="flexiblas">Use FlexiBLAS as the BLAS backend</flag>
+		<flag name="mkl">Use Intel MKL as the BLAS backend</flag>
+		<flag name="opencl">Build OpenCL GPU backend</flag>
+		<flag name="openblas">Use OpenBLAS as the BLAS backend</flag>
+		<flag name="openmp">Enable OpenMP multi-core parallelism for CPU inference</flag>
+		<flag name="rocm">Build AMD ROCm/HIP GPU backend</flag>
+		<flag name="rpc">Enable RPC backend for distributed multi-machine inference</flag>
+		<flag name="server">Build llama-server — an OpenAI-compatible HTTP inference server</flag>
+		<flag name="sycl">Build Intel SYCL/Level Zero GPU backend for Intel Arc GPUs. Requires Intel oneAPI DPC++ compiler (icpx) installed manually from Intel.</flag>
+		<flag name="vulkan">Build Vulkan GPU backend (cross-vendor: Intel Arc, AMD, NVIDIA)</flag>
+	</use>
+</pkgmetadata>
