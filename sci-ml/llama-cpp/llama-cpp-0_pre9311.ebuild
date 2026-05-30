@@ -43,7 +43,7 @@ COMMON_DEPEND="
 	)
 	sycl? (
 		dev-libs/level-zero:=
-		sci-libs/mkl
+		sci-libs/mkl[sycl(-)]
 	)
 	vulkan? ( media-libs/vulkan-loader )
 "
@@ -54,6 +54,7 @@ DEPEND="
 "
 
 BDEPEND="
+	sycl? ( dev-lang/intel-oneapi-dpcpp )
 	vulkan? (
 		dev-util/vulkan-headers
 		media-libs/shaderc
@@ -75,27 +76,6 @@ src_prepare() {
 	# enabled; the eclass exports src_prepare unconditionally otherwise.
 	if use cuda; then
 		cuda_src_prepare
-	fi
-}
-
-pkg_pretend() {
-	if use sycl; then
-		local oneapi_root="${ONEAPI_ROOT:-/opt/intel/oneapi}"
-		local icpx_candidate
-		if type -P icpx &>/dev/null; then
-			icpx_candidate=$(type -P icpx)
-		else
-			icpx_candidate="${oneapi_root}/compiler/latest/bin/icpx"
-		fi
-		if [[ ! -x ${icpx_candidate} ]]; then
-			eerror "USE=sycl requires Intel's DPC++/C++ compiler (icpx)."
-			eerror "Download and install the Intel oneAPI DPC++/C++ Compiler Standalone from:"
-			eerror "  https://www.intel.com/content/www/us/en/developer/articles/tool/oneapi-standalone-components.html"
-			eerror "After installation source the environment before emerging:"
-			eerror "  source /opt/intel/oneapi/setvars.sh"
-			eerror "  emerge =sci-ml/llama-cpp-${PV}"
-			die "icpx not found — Intel oneAPI DPC++ compiler required for USE=sycl"
-		fi
 	fi
 }
 
@@ -158,30 +138,105 @@ src_configure() {
 	fi
 
 	if use sycl; then
-		# Locate the Intel oneAPI installation root and icpx binary.
-		# The user must have sourced /opt/intel/oneapi/setvars.sh before emerging,
-		# or have icpx in PATH. ONEAPI_ROOT tells the SYCL CMakeLists which
-		# compiler path is in use ("oneAPI Release" vs open-source LLVM).
-		local oneapi_root="${ONEAPI_ROOT:-/opt/intel/oneapi}"
-		local icpx_bin
-		if type -P icpx &>/dev/null; then
-			icpx_bin=$(type -P icpx)
-			# Derive oneapi_root from the binary: <root>/compiler/<ver>/bin/icpx
-			local resolved
-			resolved=$(readlink -f "${icpx_bin}" 2>/dev/null || echo "${icpx_bin}")
-			oneapi_root=$(dirname "$(dirname "$(dirname "$(dirname "${resolved}")")")")
-		else
-			icpx_bin="${oneapi_root}/compiler/latest/bin/icpx"
-		fi
-
+		# dev-lang/intel-oneapi-dpcpp installs to a fixed prefix; use it directly.
+		local oneapi_root="${EPREFIX}/opt/intel/oneapi"
+		local icpx_bin="${oneapi_root}/compiler/latest/bin/icpx"
 		export ONEAPI_ROOT="${oneapi_root}"
+
+		# icpx ships no C/C++ headers. On Gentoo, stddef.h and friends live
+		# only in GCC's internal include dir — not in /usr/include (unlike
+		# Ubuntu/Debian where glibc provides them). We cannot add the full
+		# GCC include dir via -isystem because it also contains hundreds of
+		# *intrin.h files that use __builtin_ia32_* in ways incompatible with
+		# icpx/clang. Symlink only the safe C-standard headers into a minimal
+		# directory. Adding -isystem to CXXFLAGS would break g++ which is used
+		# for cmake's initial compiler test; use a wrapper instead.
+		local gcc_install_dir icpx_include icpx_wrapper
+		gcc_install_dir=$(dirname "$($(tc-getCXX) -print-libgcc-file-name)")
+		icpx_include="${T}/icpx-include"
+		mkdir -p "${icpx_include}" || die
+		for hdr in "${gcc_install_dir}"/include/std*.h \
+		            "${gcc_install_dir}"/include/float.h \
+		            "${gcc_install_dir}"/include/iso646.h; do
+			[[ -f "${hdr}" ]] || continue
+			ln -sf "${hdr}" "${icpx_include}/${hdr##*/}" || die
+		done
+
+		# DPC++ 2026.0 ships no sycl-post-link or file-table-tform binaries; their
+		# functionality is built into clang-linker-wrapper via
+		# --no-use-sycl-post-link-tool.  spirv-to-ir-wrapper is still called as an
+		# external process — it converts SPIR-V-flavoured LLVM IR to a form
+		# suitable for linking; the input is already in that form, so a passthrough
+		# script is sufficient.
+		cat > "${T}/spirv-to-ir-wrapper" <<-'_STUB_' || die
+			#!/bin/bash
+			input="" output=""
+			i=0; args=("$@")
+			while [[ $i -lt ${#args[@]} ]]; do
+				case "${args[$i]}" in
+					-o) i=$((i+1)); output="${args[$i]}" ;;
+					--*) ;;
+					*) input="${args[$i]}" ;;
+				esac
+				i=$((i+1))
+			done
+			[[ -n ${input} && -n ${output} && -f ${input} ]] && cp "${input}" "${output}"
+		_STUB_
+		chmod +x "${T}/spirv-to-ir-wrapper" || die
+
+		# icpx wrapper: compile steps (-c/-E/-S) pass through with the GCC
+		# headers shim and --offload-new-driver enabled.  Link steps run the
+		# clang-linker-wrapper pipeline via icpx -### so we can inject
+		# --no-use-sycl-post-link-tool (no icpx-level flag exposes this).
+		# ${T} is prepended to PATH so spirv-to-ir-wrapper is found at runtime.
+		icpx_wrapper="${T}/icpx"
+		cat > "${icpx_wrapper}" <<-_WRAP_ || die "failed to write icpx wrapper"
+			#!/bin/bash
+			for arg; do
+				case "\${arg}" in
+					-c|-E|-S) exec "${icpx_bin}" -isystem "${icpx_include}" --offload-new-driver "\$@" ;;
+				esac
+			done
+			export PATH="${T}:\${PATH}"
+			tmplog=\$(mktemp) || exit 1
+			"${icpx_bin}" -### --offload-new-driver "\$@" 2>"\${tmplog}" || {
+				cat "\${tmplog}" >&2; rm -f "\${tmplog}"; exit 1
+			}
+			rc=0
+			while read -r cmd; do
+				[[ "\${cmd:0:1}" == '"' ]] || continue
+				if [[ "\${cmd}" == *"clang-linker-wrapper"* ]]; then
+					cmd="\${cmd/\" \"--/\" \"--no-use-sycl-post-link-tool\" \"--}"
+				fi
+				eval "\${cmd}" || { rc=\$?; break; }
+			done < "\${tmplog}"
+			rm -f "\${tmplog}"
+			exit \${rc}
+		_WRAP_
+		chmod +x "${icpx_wrapper}" || die
+
+		# Export CXX so that cmake_src_configure's tc-getCXX picks up our wrapper
+		# and the generated gentoo_toolchain.cmake sets CMAKE_CXX_COMPILER to it.
+		# Setting -DCMAKE_CXX_COMPILER alone is insufficient: the toolchain file
+		# is the authority cmake uses for compiler detection.
+		local -x CXX="${icpx_wrapper}"
 
 		mycmakeargs+=(
 			-DGGML_SYCL=yes
 			-DGGML_SYCL_F16=yes
-			# cmake prefix for IntelSYCL and MKL CMake config files
 			-DCMAKE_PREFIX_PATH="${oneapi_root}/compiler/latest;${oneapi_root}/mkl/latest;${ESYSROOT}/usr"
-			-DCMAKE_CXX_COMPILER="${icpx_bin}"
+			-DCMAKE_CXX_COMPILER="${icpx_wrapper}"
+			# MKLConfig.cmake derives MKL_ROOT from its cmake file location; via
+			# the /usr/lib64/cmake/mkl/ symlink it gets /usr, then fails to find
+			# the SYCL libs. Set MKL_ROOT explicitly to the oneAPI installation.
+			-DMKL_ROOT="${oneapi_root}/mkl/latest"
+			# MKLConfig.cmake only creates MKL::MKL_SYCL::BLAS when SYCL_COMPILER=ON;
+			# it auto-detects this by checking if CMAKE_CXX_COMPILER name == "icpx",
+			# but our wrapper is named differently. Force it explicitly.
+			-DENABLE_SYCL_COMPILER=ON
+			# sci-libs/mkl removes intel_thread and gnu_thread unless those USE
+			# flags are set; sequential is always present.
+			-DMKL_THREADING=sequential
 		)
 	fi
 

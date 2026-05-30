@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">intel/llvm</remote-id>
+	</upstream>
+	<longdescription>
+		Intel oneAPI DPC++/C++ Compiler provides icpx and icx — compilers based on
+		LLVM/Clang with Intel SYCL extensions. Required to build SYCL backends
+		for Intel Arc GPU acceleration (e.g. sci-ml/llama-cpp[sycl]).
+		Installed as a binary package from Intel's APT repository.
+	</longdescription>
+</pkgmetadata>
