@@ -44,6 +44,7 @@ RESTRICT="strip"
 
 RDEPEND="
 	dev-libs/level-zero
+	sys-apps/hwloc:=
 "
 BDEPEND="
 	app-arch/xz-utils[extra-filters(+)]
