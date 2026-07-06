@@ -1,0 +1,28 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+[Unit]
+Description=Zigbee2MQTT
+Documentation=https://www.zigbee2mqtt.io
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zigbee2mqtt
+Group=zigbee2mqtt
+Environment=ZIGBEE2MQTT_DATA=/var/lib/zigbee2mqtt
+WorkingDirectory=/usr/lib/zigbee2mqtt
+ExecStart=/usr/bin/node index.js
+Restart=on-failure
+RestartSec=5s
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/zigbee2mqtt /var/log/zigbee2mqtt
+
+[Install]
+WantedBy=multi-user.target
