@@ -1,0 +1,12 @@
+# Configuration for the zigbee2mqtt service.
+
+# Directory holding configuration.yaml, the device database and state.
+ZIGBEE2MQTT_DATA="/var/lib/zigbee2mqtt"
+
+# User and group the daemon runs as. The zigbee2mqtt user is a member of the
+# dialout group so it can access serial Zigbee adapters (/dev/ttyUSB*, ttyACM*).
+ZIGBEE2MQTT_USER="zigbee2mqtt"
+ZIGBEE2MQTT_GROUP="zigbee2mqtt"
+
+# Optional watchdog (CSV minutes). See https://www.zigbee2mqtt.io
+#Z2M_WATCHDOG="default"

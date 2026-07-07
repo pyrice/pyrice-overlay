@@ -1,0 +1,30 @@
+#!/sbin/openrc-run
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+: ${ZIGBEE2MQTT_DATA:=/var/lib/zigbee2mqtt}
+: ${ZIGBEE2MQTT_USER:=zigbee2mqtt}
+: ${ZIGBEE2MQTT_GROUP:=zigbee2mqtt}
+
+description="Zigbee to MQTT bridge"
+
+directory="/usr/lib/zigbee2mqtt"
+command="/usr/bin/node"
+command_args="index.js"
+command_user="${ZIGBEE2MQTT_USER}:${ZIGBEE2MQTT_GROUP}"
+command_background="yes"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/zigbee2mqtt/${RC_SVCNAME}.log"
+error_log="/var/log/zigbee2mqtt/${RC_SVCNAME}.log"
+
+export ZIGBEE2MQTT_DATA
+
+depend() {
+	need net
+	use mqtt logger
+}
+
+start_pre() {
+	checkpath -d -m 0750 -o "${ZIGBEE2MQTT_USER}:${ZIGBEE2MQTT_GROUP}" "${ZIGBEE2MQTT_DATA}"
+	checkpath -d -m 0750 -o "${ZIGBEE2MQTT_USER}:${ZIGBEE2MQTT_GROUP}" /var/log/zigbee2mqtt
+}

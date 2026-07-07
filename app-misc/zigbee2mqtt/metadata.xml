@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<longdescription lang="en">
+		Zigbee2MQTT bridges Zigbee devices to MQTT, allowing the use of Zigbee
+		devices without the vendor's proprietary bridge or gateway. It runs as a
+		Node.js service and exposes devices over MQTT for integration with home
+		automation systems such as Home Assistant.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">Koenkk/zigbee2mqtt</remote-id>
+		<bugs-to>https://github.com/Koenkk/zigbee2mqtt/issues</bugs-to>
+		<doc>https://www.zigbee2mqtt.io/</doc>
+	</upstream>
+</pkgmetadata>

@@ -1,0 +1,6 @@
+#!/bin/sh
+# Zigbee2MQTT launcher: run the bundled application from its install prefix.
+# The data/config directory is selected via the ZIGBEE2MQTT_DATA environment
+# variable (set by the init script / systemd unit; defaults to ./data otherwise).
+cd /usr/lib/zigbee2mqtt || exit 1
+exec /usr/bin/node index.js "$@"
