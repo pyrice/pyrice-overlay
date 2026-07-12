@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andersson.kent@gmail.com</email>
+    <name>Kent Andersson</name>
+  </maintainer>
+  <longdescription>
+    Copy of ::gentoo dev-db/mongodb-8.0.12 with PYTHON_COMPAT extended to
+    python3_14, so the build no longer forces the python3_13 toolchain to
+    stay installed. Drop this package when ::gentoo mongodb gains
+    python3_14 support.
+  </longdescription>
+  <use>
+    <flag name="mongosh">Install the MongoDB shell from <pkg>app-admin/mongosh-bin</pkg></flag>
+    <flag name="tools">Install the MongoDB tools (mongoimport, mongodump...) from <pkg>app-admin/mongo-tools</pkg></flag>
+  </use>
+  <upstream>
+    <remote-id type="cpe">cpe:/a:mongodb:mongodb</remote-id>
+    <remote-id type="github">mongodb/mongo</remote-id>
+  </upstream>
+</pkgmetadata>
