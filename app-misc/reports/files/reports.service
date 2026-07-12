@@ -2,8 +2,10 @@
 Description=Reports data collection service
 After=network-online.target postgresql.service
 Wants=network-online.target
-StartLimitBurst=8
-StartLimitIntervalSec=10h
+# 6 starts within 4h covers the initial run plus five 20-minute retries,
+# and the window expires long before the next day's timer trigger.
+StartLimitBurst=6
+StartLimitIntervalSec=4h
 
 [Service]
 Type=oneshot
@@ -11,9 +13,9 @@ ExecStart=/usr/bin/reports fetch -v --config-file /etc/reports/config.toml --key
 User=reports
 Group=reports
 
-# Retry logic if data is not available
+# Retry while tomorrow's day-ahead prices are not yet published
 Restart=on-failure
-RestartSec=1h
+RestartSec=20min
 
 # Security hardening
 NoNewPrivileges=true

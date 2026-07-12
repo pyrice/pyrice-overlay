@@ -1,9 +1,11 @@
 [Unit]
-Description=Run reports daily at 13:00
-Requires=reports.service
+Description=Run reports daily at 13:50
+# No Requires=reports.service here: that dependency made the service start
+# together with the timer at boot, hours before prices are published.
 
 [Timer]
-OnCalendar=*-*-* 13:00:00
+# Nord Pool publishes day-ahead prices ~12:45 CET (13:45 CEST in summer).
+OnCalendar=*-*-* 13:50:00
 Persistent=true
 
 [Install]
