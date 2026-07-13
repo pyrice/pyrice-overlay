@@ -52,8 +52,14 @@ declare -rgA CPU_FEATURES=(
 	[SSE42]="x86;sse4_2"
 )
 add_cpu_features_use() {
+	# Runs in global scope, i.e. in the depend phase, where the sandbox
+	# forbids the temp file bash needs for a <<< here-string.
+	local flag pair arch use
 	for flag in "${!CPU_FEATURES[@]}"; do
-		IFS=$';' read -r arch use <<< "${CPU_FEATURES[${flag}]}"
+		pair=${CPU_FEATURES[${flag}]}
+		arch=${pair%%;*}
+		use=${pair#*;}
+		[[ ${use} == "${pair}" ]] && use=
 		IUSE+=" cpu_flags_${arch}_${use:-${flag,,}}"
 	done
 }
