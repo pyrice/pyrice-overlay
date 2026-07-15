@@ -6,4 +6,7 @@
 		<name>Kent Andersson</name>
 	</maintainer>
 	<longdescription>Client for Perforce version control — Helix Core — tracks and manages changes to your source code, digital assets, and large binary files. It creates a single source of truth and collaboration platform that helps teams move faster, even as they develop complex products with thousands of contributors.</longdescription>
+	<use>
+		<flag name="pdf-preview">Install the built-in PDF preview plugin; requires libQt6Pdf from <pkg>dev-qt/qtwebengine</pkg>[pdfium], which upstream does not bundle</flag>
+	</use>
 </pkgmetadata>

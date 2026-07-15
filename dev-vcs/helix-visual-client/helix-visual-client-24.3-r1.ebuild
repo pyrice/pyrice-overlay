@@ -1,4 +1,4 @@
-# Copyright 1999-2024 Gentoo Authors
+# Copyright 1999-2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,28 +7,40 @@ inherit desktop
 
 DESCRIPTION="Perforce version control system Helix Visual Client (P4V)"
 HOMEPAGE="http://www.perforce.com/"
+# ${P} (not ${PF}) so revision bumps reuse the fetched tarball
 SRC_URI="amd64? (
 	http://www.perforce.com/downloads/perforce/r${PV}/bin.linux26x86_64/p4v.tgz \
-		    -> ${PF}-amd64.tgz )"
+		    -> ${P}-amd64.tgz )"
+S=${WORKDIR}
 
 LICENSE="perforce"
 SLOT="0"
 KEYWORDS="-* ~amd64"
-IUSE=""
+# Not named "pdf": the desktop profile enables that flag globally, and this
+# one must stay opt-in — enabling it costs a full qtwebengine build.
+IUSE="pdf-preview"
 RESTRICT="mirror strip"
 
-DEPEND=""
-RDEPEND="x11-libs/libxcb x11-libs/xcb-util-cursor ${DEPEND}"
-BDEPEND=""
+# Upstream's PDF-preview plugin needs libQt6Pdf.so.6 but the tarball does
+# not bundle it; only qtwebengine[pdfium] provides that library.
+RDEPEND="x11-libs/libxcb
+	x11-libs/xcb-util-cursor
+	pdf-preview? ( dev-qt/qtwebengine[pdfium] )"
 
 INSTALL_TO="/opt/${PN}"
-S=${WORKDIR}
 
 src_unpack() {
 	# we have to copy all of the files from $DISTDIR, otherwise we get
 	# sandbox violations when trying to install
 	if [ ${A} != "" ]; then
 		unpack ${A}
+	fi
+}
+
+src_prepare() {
+	default
+	if ! use pdf-preview; then
+		rm p4v-*/lib/plugins/imageformats/libqpdf.so || die
 	fi
 }
 
