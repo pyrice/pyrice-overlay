@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="appindicator">Enable system tray via <pkg>dev-libs/libayatana-appindicator</pkg></flag>
+	</use>
+	<upstream>
+		<remote-id type="github">Mastermindzh/tidal-hifi</remote-id>
+	</upstream>
+</pkgmetadata>

@@ -11,11 +11,13 @@ DESCRIPTION="Tidal on Electron with widevine(hifi) support"
 HOMEPAGE="https://github.com/Mastermindzh/tidal-hifi"
 SRC_URI="https://github.com/Mastermindzh/tidal-hifi/releases/download/${PV}/tidal-hifi_${PV}_amd64.deb -> ${P}.deb"
 
+S=${WORKDIR}
+
 LICENSE="MIT"
 SLOT="0"
 KEYWORDS="-* ~amd64"
-RESTRICT="bindist mirror"
 IUSE="appindicator doc libnotify"
+RESTRICT="bindist mirror"
 
 RDEPEND="app-accessibility/at-spi2-core
 	app-crypt/libsecret
@@ -25,12 +27,10 @@ RDEPEND="app-accessibility/at-spi2-core
 	x11-libs/libXScrnSaver
 	x11-libs/libXtst
 	x11-misc/xdg-utils
-	appindicator? ( dev-libs/libappindicator )
+	appindicator? ( dev-libs/libayatana-appindicator )
 	libnotify? ( x11-libs/libnotify )"
 
 QA_PREBUILT="*"
-
-S=${WORKDIR}
 
 src_prepare() {
 	default
@@ -51,5 +51,5 @@ src_install() {
 		dodoc -r "usr/share/doc/tidal-hifi/"* || die "dodoc failed"
 	fi
 
-	dosym "/opt/tidal-hifi/tidal-hifi" "/usr/bin/tidal-hifi" || die "dosym failed"
+	dosym ../../opt/tidal-hifi/tidal-hifi /usr/bin/tidal-hifi || die "dosym failed"
 }

@@ -54,6 +54,16 @@ directory = "${S}/vendor"
 EOF
 	[[ $? -ne 0 ]] && die "Failed to write cargo config"
 
+	# Den vendorerade openconnect-craten bygger in libopenconnect mot
+	# systembibliotek (trousers/TPM 1.2, json-parser) som den hittar vid
+	# configure men utelämnar ur sin länkrad.
+	if has_version app-crypt/trousers; then
+		export RUSTFLAGS="${RUSTFLAGS} -C link-arg=-ltspi"
+	fi
+	if has_version dev-libs/json-parser; then
+		export RUSTFLAGS="${RUSTFLAGS} -C link-arg=-ljsonparser"
+	fi
+
 	# Kör bygget (utan nätverk)
 	cargo build --release -p gpclient -p gpservice -p gpauth || die "Rust build failed"
 	cargo build --release -p gpgui-helper --features "tauri/custom-protocol" || die "GUI build failed"
