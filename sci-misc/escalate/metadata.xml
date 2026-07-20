@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM 'https://www.gentoo.org/dtd/metadata.dtd'>
+<pkgmetadata>
+  <maintainer type="person">
+    <email>andersson.kent@gmail.com</email>
+    <name>Kent Andersson</name>
+  </maintainer>
+  <longdescription>ESCALATE calculates the required amount of lifting gas (helium or hydrogen) for stratospheric balloon missions. It supports multiple equations of state (Esrange tabular method, ideal gas law, AGA8 Detail, GERG-2008) and provides both CLI and interactive TUI interfaces.</longdescription>
+  <upstream>
+    <remote-id type="github">pyrice/escalate</remote-id>
+  </upstream>
+</pkgmetadata>
