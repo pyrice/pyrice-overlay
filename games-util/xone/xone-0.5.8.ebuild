@@ -19,7 +19,7 @@ SRC_URI="
 		-> ${PN}-firmware-091e.cab
 "
 
-LICENSE="GPL-2+ MS-TOU"
+LICENSE="GPL-2+ linux-fw-redistributable"
 SLOT="0"
 KEYWORDS="~amd64"
 
