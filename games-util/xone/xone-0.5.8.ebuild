@@ -75,20 +75,25 @@ src_install() {
 	insinto /etc/modprobe.d/
 	newins "${S}"/install/modprobe.conf xone-blacklist.conf
 
-	# Install firmware under the exact filenames the built module requests.
-	# The names are read from the .ko itself so they stay correct across
-	# upstream renames without any changes to this ebuild.
+	# Install firmware under the exact filenames the wireless dongle driver
+	# requests at runtime. transport/dongle.c's xone_dongle_fw_load() builds
+	# the request with sprintf(fwname, "xone_dongle_%04x.bin", fw_product),
+	# i.e. the name is only ever assembled at runtime from the dongle's USB
+	# product ID -- it is never a literal string in the built module, so it
+	# cannot be read back out of xone_dongle.ko (confirmed: `strings` on the
+	# built module shows only the literal format string, not per-PID names).
+	# Each of the four supported PIDs (see xone_dongle_id_table in
+	# transport/dongle.c) maps 1:1 to one of the firmware cabinets fetched
+	# and extracted per-PID in src_unpack.
 	einfo "Installing Microsoft binary firmware (required for wireless dongle)"
 	insinto /lib/firmware/
 
-	local name pid src
-	while IFS= read -r name; do
-		pid="${name%.bin}"
-		pid="${pid##*_}"
+	local pid src
+	for pid in 02fe 02e6 02f9 091e; do
 		src=( "${S}"/xone_firmware_${pid}/*.bin )
-		[[ -f ${src[0]} ]] || die "No firmware found for PID ${pid} (${name})"
-		newins "${src[0]}" "${name}"
-	done < <(strings dongle/xone-dongle.ko | grep -E '^xow_dongle[_0-9a-f]*\.bin$')
+		[[ -f ${src[0]} ]] || die "No firmware found for PID ${pid}"
+		newins "${src[0]}" "xone_dongle_${pid}.bin"
+	done
 }
 
 pkg_postinst() {
