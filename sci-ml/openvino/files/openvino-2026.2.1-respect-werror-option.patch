@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kent Andersson <andersson.kent@gmail.com>
+Date: Wed, 22 Jul 2026 20:45:00 +0200
+Subject: [PATCH] intel_gpu: respect CMAKE_COMPILE_WARNING_AS_ERROR
+
+Do not force warnings to be fatal for downstream builds which explicitly
+disable CMake's standard warnings-as-errors option.
+
+---
+ src/plugins/intel_gpu/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/plugins/intel_gpu/CMakeLists.txt b/src/plugins/intel_gpu/CMakeLists.txt
+index b205d67..7842c3f 100644
+--- a/src/plugins/intel_gpu/CMakeLists.txt
++++ b/src/plugins/intel_gpu/CMakeLists.txt
+@@ -54,7 +54,7 @@
+ add_subdirectory(thirdparty)
+ include(thirdparty/cmake/rapidjson.cmake)
+ 
+-if(CMAKE_COMPILER_IS_GNUCXX)
++if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_COMPILE_WARNING_AS_ERROR)
+     ov_add_compiler_flags(-Werror)
+ endif()
+ 
+-- 
+2.50.1

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">openvinotoolkit/openvino</remote-id>
+	</upstream>
+	<longdescription>
+		OpenVINO provides a C, C++ and Python inference runtime, graph
+		frontends, and optimized CPU and Intel GPU plugins.
+	</longdescription>
+	<use>
+		<flag name="intel-gpu">Build the OpenCL-based Intel GPU plugin and depend on the Intel compute runtime</flag>
+		<flag name="jax">Build the JAX model frontend</flag>
+		<flag name="onnx">Build the ONNX model frontend</flag>
+		<flag name="paddle">Build the PaddlePaddle model frontend</flag>
+		<flag name="pytorch">Build the PyTorch model frontend</flag>
+		<flag name="samples">Build the bundled C and C++ example programs</flag>
+		<flag name="tensorflow">Build the TensorFlow model frontend</flag>
+		<flag name="tflite">Build the TensorFlow Lite model frontend</flag>
+	</use>
+</pkgmetadata>

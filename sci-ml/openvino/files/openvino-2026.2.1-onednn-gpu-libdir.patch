@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kent Andersson <andersson.kent@gmail.com>
+Date: Wed, 22 Jul 2026 22:15:00 +0200
+Subject: [PATCH] intel_gpu: fix the private oneDNN install libdir
+
+The oneDNN GPU byproduct path uses a private lib directory.  Pin the
+ExternalProject to the same directory instead of inheriting a platform
+default such as lib64.
+
+---
+ src/plugins/intel_gpu/thirdparty/CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/plugins/intel_gpu/thirdparty/CMakeLists.txt b/src/plugins/intel_gpu/thirdparty/CMakeLists.txt
+index bffbf51..db9d538 100644
+--- a/src/plugins/intel_gpu/thirdparty/CMakeLists.txt
++++ b/src/plugins/intel_gpu/thirdparty/CMakeLists.txt
+@@ -143,6 +143,7 @@ if(ENABLE_ONEDNN_FOR_GPU)
+                 "-DDNNL_GPU_RUNTIME=${ONEDNN_GPU_RT}"
+                 "-DDNNL_LIBRARY_NAME=${DNNL_GPU_LIBRARY_NAME}"
+                 "-DCMAKE_INSTALL_PREFIX=${ONEDNN_INSTALL_DIR}"
++                "-DCMAKE_INSTALL_LIBDIR=lib"
+                 "-DDNNL_ENABLE_CONCURRENT_EXEC=ON"
+                 "-DDNNL_ENABLE_PRIMITIVE_CACHE=ON"
+                 "-DDNNL_ENABLE_WORKLOAD=INFERENCE"
+-- 
+2.50.1

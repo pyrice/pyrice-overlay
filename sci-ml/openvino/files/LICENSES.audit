@@ -1,0 +1,40 @@
+# Source path to Gentoo license token audit for the full recursive bundle.
+# Disabled features remain listed because their source is present in the bundle.
+. Apache-2.0
+cmake/developer_package/ncc_naming_style/ncc Apache-2.0
+src/bindings/python/thirdparty/pybind11 BSD
+src/plugins/intel_cpu/thirdparty/ComputeLibrary MIT
+src/plugins/intel_cpu/thirdparty/kleidiai Apache-2.0
+src/plugins/intel_cpu/thirdparty/libxsmm BSD
+src/plugins/intel_cpu/thirdparty/mlas MIT
+src/plugins/intel_cpu/thirdparty/onednn Apache-2.0
+src/plugins/intel_cpu/thirdparty/xbyak_riscv BSD
+src/plugins/intel_gpu/thirdparty/onednn_gpu Apache-2.0
+src/plugins/intel_npu/thirdparty/level-zero-ext MIT
+src/plugins/intel_npu/thirdparty/yaml-cpp MIT
+thirdparty/flatbuffers/flatbuffers Apache-2.0
+thirdparty/gflags/gflags BSD
+thirdparty/gflags/gflags/doc BSD
+thirdparty/gtest/gtest BSD
+thirdparty/ittapi/ittapi BSD
+thirdparty/json/nlohmann_json MIT
+thirdparty/level_zero/level-zero MIT
+thirdparty/ocl/cl_headers Apache-2.0
+thirdparty/ocl/clhpp_headers Apache-2.0
+thirdparty/ocl/clhpp_headers/external/CMock MIT
+thirdparty/ocl/clhpp_headers/external/CMock/vendor/c_exception MIT
+thirdparty/ocl/clhpp_headers/external/CMock/vendor/unity MIT
+thirdparty/ocl/icd_loader Apache-2.0
+thirdparty/onnx/onnx Apache-2.0
+thirdparty/onnx/onnx/third_party/pybind11 BSD
+thirdparty/protobuf/protobuf BSD
+thirdparty/protobuf/protobuf/third_party/benchmark Apache-2.0
+thirdparty/protobuf/protobuf/third_party/googletest BSD
+thirdparty/pugixml MIT
+thirdparty/snappy BSD
+thirdparty/snappy/third_party/benchmark Apache-2.0
+thirdparty/snappy/third_party/googletest BSD
+thirdparty/telemetry Apache-2.0
+thirdparty/xbyak BSD
+thirdparty/zlib/zlib ZLIB
+
