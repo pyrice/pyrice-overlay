@@ -1,0 +1,63 @@
+--- a/src/ov_extension.cpp	2026-07-23 15:28:36.230680003 +0200
++++ b/src/ov_extension.cpp	2026-07-23 18:17:22.396365315 +0200
+@@ -2,14 +2,23 @@
+ // SPDX-License-Identifier: Apache-2.0
+ //
+ 
++#include <openvino/core/op_extension.hpp>
++#ifdef OPENVINO_TOKENIZERS_ENABLE_ONNX_EXTENSIONS
+ #include <openvino/frontend/onnx/extension/conversion.hpp>
++#endif
++#ifdef OPENVINO_TOKENIZERS_ENABLE_TF_EXTENSIONS
+ #include <openvino/frontend/tensorflow/extension/conversion.hpp>
++#endif
+ 
+ #include "tokenizer.hpp"
+ #include "numeric_to_string.hpp"
+ 
++// Macros expand to ",item1, item2, ..." (note leading comma) or to nothing,
++// so the initialiser list in OPENVINO_CREATE_EXTENSIONS stays valid when
++// either or both frontends are absent.
++#ifdef OPENVINO_TOKENIZERS_ENABLE_ONNX_EXTENSIONS
+ #define OPENVINO_TOKENIZERS_ONNX_CONVERSION_EXTENSIONS                         \
+-  std::make_shared<ov::frontend::onnx::ConversionExtension>(                   \
++  ,std::make_shared<ov::frontend::onnx::ConversionExtension>(                  \
+       "StringNormalizer", translate_onnx_string_normalizer),                   \
+       std::make_shared<ov::frontend::onnx::ConversionExtension>(               \
+           "LabelEncoder", "ai.onnx.ml", translate_onnx_label_encoder),         \
+@@ -17,9 +26,13 @@
+           "Tokenizer", "com.microsoft", translate_onnx_tokenizer),             \
+       std::make_shared<ov::frontend::onnx::ConversionExtension>(               \
+           "TfIdfVectorizer", translate_onnx_tfid_vectorizer)
++#else
++#define OPENVINO_TOKENIZERS_ONNX_CONVERSION_EXTENSIONS
++#endif
+ 
++#ifdef OPENVINO_TOKENIZERS_ENABLE_TF_EXTENSIONS
+ #define OPENVINO_TOKENIZERS_TENSORFLOW_CONVERSION_EXTENSIONS                   \
+-  std::make_shared<ov::frontend::tensorflow::ConversionExtension>(             \
++  ,std::make_shared<ov::frontend::tensorflow::ConversionExtension>(            \
+       "RegexSplitWithOffsets", translate_regex_split_with_offsets),            \
+       std::make_shared<ov::frontend::tensorflow::ConversionExtension>(         \
+           "SentencepieceOp", translate_sentencepiece_op),                      \
+@@ -50,6 +63,9 @@
+           "CaseFoldUTF8", translate_case_fold_utf8),                           \
+       std::make_shared<ov::frontend::tensorflow::ConversionExtension>(         \
+           "AsString", translate_as_string)
++#else
++#define OPENVINO_TOKENIZERS_TENSORFLOW_CONVERSION_EXTENSIONS
++#endif
+ 
+ // clang-format off
+ //! [ov_extension:entry_point]
+@@ -85,8 +101,8 @@
+             std::make_shared<ov::OpExtension<SentencepieceStreamDetokenizer>>(),
+             std::make_shared<ov::OpExtension<CaseFold>>(),
+             std::make_shared<ov::OpExtension<NormalizeUnicode>>(),
+-            std::make_shared<ov::OpExtension<UnigramTokenizer>>(),
+-            OPENVINO_TOKENIZERS_TENSORFLOW_CONVERSION_EXTENSIONS,
++            std::make_shared<ov::OpExtension<UnigramTokenizer>>()
++            OPENVINO_TOKENIZERS_TENSORFLOW_CONVERSION_EXTENSIONS
+             OPENVINO_TOKENIZERS_ONNX_CONVERSION_EXTENSIONS
+ }));
+ 

@@ -1,0 +1,107 @@
+From: Gentoo OpenVINO maintainers
+Subject: [PATCH] Install into GNU and Python package directories
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -103,8 +103,8 @@ if(EXISTS "${OpenVINOGenAI_SOURCE_DIR}/tests/cpp" AND ENABLE_TESTS)
+     add_subdirectory(tests/cpp)
+ endif()
+ 
+-install(FILES LICENSE DESTINATION docs/licensing COMPONENT licensing_genai RENAME LICENSE-GENAI)
+-install(FILES third-party-programs.txt DESTINATION docs/licensing COMPONENT licensing_genai RENAME third-party-programs-genai.txt)
++install(FILES LICENSE DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT licensing_genai RENAME LICENSE-GENAI)
++install(FILES third-party-programs.txt DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT licensing_genai RENAME third-party-programs-genai.txt)
+ if(NOT DEFINED CPACK_ARCHIVE_COMPONENT_INSTALL)
+     set(CPACK_ARCHIVE_COMPONENT_INSTALL ON)
+ endif()
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -2,6 +2,8 @@
+ # SPDX-License-Identifier: Apache-2.0
+ #
+ 
++include(GNUInstallDirs)
++
+ 
+ # - Windows: `<openvino_dir>\runtime\bin\intel64\Release\`
+ # - MacOS_x86: `<openvino_dir>/runtime/lib/intel64/Release`
+@@ -56,7 +58,7 @@ if(CPACK_GENERATOR STREQUAL "NPM")
+         list(APPEND rpaths "@loader_path/../node_modules/openvino-node/bin")
+     endif()
+ else()
+-    set(LIBRARY_DESTINATION runtime/lib/${ARCH_DIR})
+-    set(ARCHIVE_DESTINATION runtime/lib/${ARCH_DIR})
+-    set(RUNTIME_DESTINATION runtime/bin/${ARCH_DIR})
++    set(LIBRARY_DESTINATION ${CMAKE_INSTALL_LIBDIR})
++    set(ARCHIVE_DESTINATION ${CMAKE_INSTALL_LIBDIR})
++    set(RUNTIME_DESTINATION ${CMAKE_INSTALL_BINDIR})
+ endif()
+--- a/src/cpp/CMakeLists.txt
++++ b/src/cpp/CMakeLists.txt
+@@ -234,5 +234,5 @@ if(WIN32)
+ endif()
+ 
+-target_include_directories(${TARGET_NAME} INTERFACE "$<INSTALL_INTERFACE:runtime/include>"
++target_include_directories(${TARGET_NAME} INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+                                                     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                     "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
+@@ -312,6 +312,6 @@ install(TARGETS ${TARGET_NAME} EXPORT OpenVINOGenAITargets
+         ARCHIVE DESTINATION ${ARCHIVE_DESTINATION} COMPONENT core_genai_dev
+         RUNTIME DESTINATION ${RUNTIME_DESTINATION} COMPONENT core_genai
+-        INCLUDES DESTINATION runtime/include)
++        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+ 
+ # development files do not need to be built for NPM package
+ if(CPACK_GENERATOR STREQUAL "NPM")
+@@ -323,18 +323,18 @@ endif()
+ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+                   ${OpenVINOGenAI_SOURCE_DIR}/src/c/include/
+-        DESTINATION runtime/include COMPONENT core_genai_dev)
++        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT core_genai_dev)
+ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/openvino/genai/version.hpp
+-        DESTINATION runtime/include/openvino/genai COMPONENT core_genai_dev)
++        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/openvino/genai COMPONENT core_genai_dev)
+ 
+ install(EXPORT OpenVINOGenAITargets FILE OpenVINOGenAITargets.cmake
+-        NAMESPACE openvino:: DESTINATION runtime/cmake
++        NAMESPACE openvino:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenVINOGenAI
+         COMPONENT core_genai_dev)
+ 
+ include(CMakePackageConfigHelpers)
+ configure_package_config_file("${OpenVINOGenAI_SOURCE_DIR}/cmake/templates/OpenVINOGenAIConfig.cmake.in"
+-                              "${CMAKE_BINARY_DIR}/OpenVINOGenAIConfig.cmake" INSTALL_DESTINATION runtime/cmake)
++                              "${CMAKE_BINARY_DIR}/OpenVINOGenAIConfig.cmake" INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenVINOGenAI)
+ write_basic_package_version_file("${CMAKE_BINARY_DIR}/OpenVINOGenAIConfigVersion.cmake"
+                                  VERSION ${OpenVINOGenAI_VERSION} COMPATIBILITY AnyNewerVersion)
+ install(FILES "${CMAKE_BINARY_DIR}/OpenVINOGenAIConfig.cmake" "${CMAKE_BINARY_DIR}/OpenVINOGenAIConfigVersion.cmake"
+-        DESTINATION runtime/cmake COMPONENT core_genai_dev)
++        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/OpenVINOGenAI COMPONENT core_genai_dev)
+ export(EXPORT OpenVINOGenAITargets FILE "${CMAKE_BINARY_DIR}/OpenVINOGenAITargets.cmake" NAMESPACE openvino::)
+--- a/src/c/CMakeLists.txt
++++ b/src/c/CMakeLists.txt
+@@ -17,1 +17,1 @@
+-target_include_directories(${TARGET_NAME} PUBLIC "$<INSTALL_INTERFACE:runtime/include>"
++target_include_directories(${TARGET_NAME} PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+@@ -42,3 +42,3 @@ install(TARGETS ${TARGET_NAME} EXPORT OpenVINOGenAITargets
+         ARCHIVE DESTINATION ${ARCHIVE_DESTINATION} COMPONENT core_c_genai_dev
+         RUNTIME DESTINATION ${RUNTIME_DESTINATION} COMPONENT core_c_genai
+-        INCLUDES DESTINATION runtime/include)
++        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+--- a/src/python/CMakeLists.txt
++++ b/src/python/CMakeLists.txt
+@@ -66,11 +66,13 @@ if(py_rpaths)
+     set_target_properties(${TARGET_NAME} PROPERTIES INSTALL_RPATH "${py_rpaths}")
+ endif()
+ 
++set(OPENVINO_GENAI_PYTHON_INSTALL_DIR "python" CACHE PATH "Python module installation directory")
++
+ install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/openvino_genai/__init__.py"
+               "${CMAKE_CURRENT_SOURCE_DIR}/openvino_genai/__init__.pyi"
+               "${CMAKE_CURRENT_SOURCE_DIR}/openvino_genai/py_openvino_genai.pyi"
+-        DESTINATION python/openvino_genai
++        DESTINATION ${OPENVINO_GENAI_PYTHON_INSTALL_DIR}/openvino_genai
+         COMPONENT pygenai_${Python3_VERSION_MAJOR}_${Python3_VERSION_MINOR})
+ install(TARGETS ${TARGET_NAME}
+-        LIBRARY DESTINATION python/openvino_genai
++        LIBRARY DESTINATION ${OPENVINO_GENAI_PYTHON_INSTALL_DIR}/openvino_genai
+         COMPONENT pygenai_${Python3_VERSION_MAJOR}_${Python3_VERSION_MINOR})

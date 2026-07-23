@@ -1,0 +1,52 @@
+Move the gguf format<> helper template definition into its header.
+
+The variadic `format` template was declared in gguf.hpp but defined in
+gguf.cpp. With optimization the defining TU inlines its own callsites and
+never emits an out-of-line instantiation, so building_blocks.cpp's
+format<int>(...) call resolves to nothing: libopenvino_genai.so ends up with
+an undefined symbol (format<int>) that aborts `import openvino_genai` at
+runtime. Defining the template in the header (which already includes
+<stdio.h>/<assert.h>) gives every TU vague-linkage instantiation, the
+idiomatic fix for a cross-TU template.
+
+--- a/src/cpp/src/gguf_utils/gguf.hpp
++++ b/src/cpp/src/gguf_utils/gguf.hpp
+@@ -28,7 +28,16 @@
+                             std::unordered_map<std::string, gguf_tensor_type>>;
+ 
+ template <typename... Args>
+-std::string format(std::string fmt, Args... args);
++std::string format(std::string fmt, Args... args) {
++    size_t bufferSize = 1000;
++    char* buffer = new char[bufferSize];
++    int n = sprintf(buffer, fmt.c_str(), args...);
++    assert(n >= 0 && n < (int)bufferSize - 1);
++
++    std::string fmtStr(buffer);
++    delete[] buffer;
++    return fmtStr;
++}
+ 
+ ov::Shape get_shape(const gguf_tensor& tensor);
+ 
+--- a/src/cpp/src/gguf_utils/gguf.cpp
++++ b/src/cpp/src/gguf_utils/gguf.cpp
+@@ -13,18 +13,6 @@
+ // https://github.com/antirez/gguf-tools/blob/af7d88d808a7608a33723fba067036202910acb3/gguflib.h#L102-L108
+ constexpr int gguf_array_header_size = 12;
+ 
+-template <typename... Args>
+-std::string format(std::string fmt, Args... args) {
+-    size_t bufferSize = 1000;
+-    char* buffer = new char[bufferSize];
+-    int n = sprintf(buffer, fmt.c_str(), args...);
+-    assert(n >= 0 && n < (int)bufferSize - 1);
+-
+-    std::string fmtStr(buffer);
+-    delete[] buffer;
+-    return fmtStr;
+-}
+-
+ std::optional<uint32_t> dtype_to_gguf_tensor_type(const ov::element::Type& dtype) {
+     switch (dtype) {
+     case ov::element::f64:

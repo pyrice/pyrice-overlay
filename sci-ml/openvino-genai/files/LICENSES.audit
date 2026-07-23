@@ -1,0 +1,7 @@
+# Source path to Gentoo license token audit.
+. Apache-2.0
+minja-3e4c61c616eda133cfb1e440fc7a14bf1729bbee MIT
+safetensors.h-974a85d7dfd6e010558353226638bb26d6b9d756 Unlicense
+gguf-tools-bac796ada809ac293e685db59b075971181cb008 MIT
+system:nlohmann_json MIT
+system:pybind11 BSD

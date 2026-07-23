@@ -1,0 +1,5 @@
+# Source path to Gentoo license token audit.
+. Apache-2.0
+sentencepiece-0.2.1 Apache-2.0
+pcre2-10.46 BSD
+

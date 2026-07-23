@@ -1,0 +1,6 @@
+# OpenVINO GenAI 2026.2.1.0 source lock
+# root https://github.com/openvinotoolkit/openvino.genai.git 7dea0459b2ac7d8dfd877fd9df6737674fd8371d
+# gitlink thirdparty/openvino_tokenizers https://github.com/openvinotoolkit/openvino_tokenizers.git 6da74a793f0fa5ca2f47a15af674cf715fccbf41 (not bundled; BUILD_TOKENIZERS=OFF)
+minja-3e4c61c616eda133cfb1e440fc7a14bf1729bbee 221f8f2279dd2552b20d5f749aab2cf3650dd144bbe013c73752d0cb507e6405 https://github.com/google/minja/archive/3e4c61c616eda133cfb1e440fc7a14bf1729bbee.tar.gz
+safetensors.h-974a85d7dfd6e010558353226638bb26d6b9d756 9aaf5961609601cf9aaa96582a207bce7c6e5fbf57ed2cc669bb7bde6a937d4b https://github.com/hsnyder/safetensors.h/archive/974a85d7dfd6e010558353226638bb26d6b9d756.tar.gz
+gguf-tools-bac796ada809ac293e685db59b075971181cb008 e7ee705a2634bc598564e53679b268beef4e90e2eb6ded38787e334302775e75 https://github.com/Lourdle/gguf-tools/archive/bac796ada809ac293e685db59b075971181cb008.tar.gz

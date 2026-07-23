@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="github">openvinotoolkit/openvino.genai</remote-id>
+	</upstream>
+	<longdescription>
+		OpenVINO GenAI provides optimized C, C++ and Python pipelines for
+		text, visual-language, speech and diffusion generation workloads.
+	</longdescription>
+</pkgmetadata>
