@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="genai">
+			Pull in <pkg>sci-ml/openvino-genai</pkg> (the GGUF/LLMPipeline
+			generative-AI layer, which itself drags in
+			<pkg>sci-ml/openvino-tokenizers</pkg>) in addition to the base
+			<pkg>sci-ml/openvino</pkg> runtime.
+		</flag>
+	</use>
+	<longdescription>
+		Meta package that ties together the pyrice-overlay OpenVINO stack so a
+		single world entry protects every member from --depclean. It carries no
+		files of its own; enabling or disabling the genai USE flag selects whether
+		the generative-AI layer is part of the set.
+	</longdescription>
+</pkgmetadata>
