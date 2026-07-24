@@ -1,0 +1,18 @@
+Make the Qt-based UEFITool GUI subdirectory optional so the package can be
+built headless (USE=-gui) with only the UEFIExtract/UEFIFind CLI tools, which
+have no Qt dependency. Upstream always builds all three from the root project.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,6 +2,10 @@
+
+ PROJECT(UEFITool_everything)
+
++OPTION(BUILD_UEFITOOL_GUI "Build the Qt-based UEFITool GUI" ON)
++
+ ADD_SUBDIRECTORY(UEFIExtract)
+ ADD_SUBDIRECTORY(UEFIFind)
+-ADD_SUBDIRECTORY(UEFITool)
++IF(BUILD_UEFITOOL_GUI)
++ ADD_SUBDIRECTORY(UEFITool)
++ENDIF()

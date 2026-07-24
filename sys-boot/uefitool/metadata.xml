@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<!-- maintainer-needed -->
+	<use>
+		<flag name="gui">Build the Qt-based UEFITool graphical firmware image editor (pulls in <pkg>dev-qt/qtbase</pkg>). With this disabled only the UEFIExtract and UEFIFind command-line tools are built.</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">LongSoft/UEFITool</remote-id>
+	</upstream>
+</pkgmetadata>
