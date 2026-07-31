@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<longdescription>
+		A dracut module that enables Resizable BAR (Smart Access Memory) on Intel
+		Arc discrete GPUs from within the initramfs, for motherboards whose BIOS
+		does not expose a ReBAR option (e.g. Supermicro H11SSL-i). A pre-udev hook
+		runs before xe/i915 binds the card: it writes the largest supported size
+		into each Intel dGPU's Resizable BAR control register, then removes and
+		rescans the root port's PCI subtree so the kernel reassigns every bridge
+		window from scratch. It is fault-tolerant, always exits 0, and skips any
+		subtree containing storage.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">pyrice/supermicro-rebar</remote-id>
+	</upstream>
+</pkgmetadata>
