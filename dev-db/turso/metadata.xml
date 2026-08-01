@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<longdescription>
+		Turso is an in-process SQL database engine written in Rust, a from-scratch
+		rewrite of SQLite that aims for compatibility with its file format and SQL
+		dialect (formerly the Limbo project). This package installs the tursodb
+		command-line shell.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">tursodatabase/turso</remote-id>
+	</upstream>
+</pkgmetadata>
