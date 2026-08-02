@@ -75,6 +75,18 @@ BDEPEND="
 
 pkg_pretend() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+
+	if use sycl; then
+		ewarn "USE=sycl is known broken and should not be enabled (2026-08-02)."
+		ewarn "The backend builds and enumerates the GPU, but every kernel using"
+		ewarn "local memory fails at runtime with"
+		ewarn "UR_RESULT_ERROR_INVALID_KERNEL_ARGUMENT_INDEX — in practice all real"
+		ewarn "inference. Cause: Intel's apt packages ship no sycl-post-link, so the"
+		ewarn "build falls back on clang-linker-wrapper's experimental"
+		ewarn "--no-use-sycl-post-link-tool, which miscompiles local-accessor kernel"
+		ewarn "arguments. A complete DPC++ toolchain from another source is needed."
+		ewarn "Use USE=vulkan instead."
+	fi
 }
 
 pkg_setup() {
