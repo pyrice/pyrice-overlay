@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="rocm">Enable ROCm gpu computing support</flag>
+		<flag name="sycl">
+			Build the SYCL backend (libggml-sycl.so) for Intel Arc discrete GPUs,
+			using <pkg>dev-lang/intel-oneapi-dpcpp</pkg> and
+			<pkg>sci-libs/mkl</pkg> built with sycl. Required for
+			<pkg>sci-ml/llama-cpp</pkg> built with sycl to actually gain a SYCL
+			backend: llama-cpp links against the system ggml, so its own USE flag
+			cannot produce the backend library on its own.
+		</flag>
+	</use>
+	<longdescription>
+		Overlay copy of sci-ml/ggml carrying an additional sycl USE flag. The
+		::gentoo package offers no SYCL backend, which leaves Intel Arc GPUs
+		reachable only through Vulkan; this copy exists solely to close that
+		capability gap and should be retired if ::gentoo ever gains the flag.
+	</longdescription>
+	<upstream>
+		<remote-id type="github">ggml-org/ggml</remote-id>
+	</upstream>
+</pkgmetadata>

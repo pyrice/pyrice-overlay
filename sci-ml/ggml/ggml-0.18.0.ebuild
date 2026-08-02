@@ -1,85 +1,89 @@
-# Copyright 2024-2026 Gentoo Authors
+# Copyright 2026 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-ROCM_VERSION="6.1"
-inherit cmake cuda rocm toolchain-funcs
+ROCM_VERSION=7.2
+inherit cuda cmake rocm toolchain-funcs
 
-MY_B="${PV#0_pre}"
-MY_P="llama.cpp-b${MY_B}"
-
-DESCRIPTION="LLM inference in C/C++ — CPU, Vulkan, SYCL/Level Zero, CUDA, ROCm"
-HOMEPAGE="https://github.com/ggml-org/llama.cpp"
-
-SRC_URI="https://github.com/ggml-org/llama.cpp/archive/refs/tags/b${MY_B}.tar.gz -> ${P}.tar.gz"
-
-S="${WORKDIR}/${MY_P}"
+DESCRIPTION="Tensor library for machine learning"
+HOMEPAGE="https://ggml.ai/"
+SRC_URI="https://github.com/ggml-org/${PN}/archive/refs/tags/v${PV}.tar.gz
+	-> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
+# ~amd64 only: this overlay copy exists for the sycl backend, whose toolchain
+# (intel-oneapi-dpcpp, mkl[sycl], level-zero, intel-compute-runtime) is amd64
+# glibc only. arm64 has no reason to prefer this over ::gentoo's ggml, which
+# keeps ~arm64 and is selected there automatically.
 KEYWORDS="~amd64"
 
-IUSE="blas blis cuda examples flexiblas mkl opencl openblas openmp rocm rpc server sycl vulkan"
+X86_CPU_FLAGS=(
+	avx
+	avx_vnni
+	avx2
+	avx512bw
+	avx512f
+	avx512vbmi
+	avx512_vnni
+	bmi2
+	fma3
+	f16c
+	sse4_2
+)
+CPU_FLAGS=( "${X86_CPU_FLAGS[@]/#/cpu_flags_x86_}" )
+# sycl is the overlay's addition over ::gentoo: it builds libggml-sycl.so for
+# Intel Arc dGPUs. ::gentoo's ggml has no sycl flag, and because llama-cpp builds
+# with LLAMA_USE_SYSTEM_GGML=ON, its own USE=sycl cannot produce the backend --
+# only this package can. Same capability-parity lesson as sci-libs/mkl.
+IUSE="${CPU_FLAGS[*]} cuda openmp rocm sycl test vulkan"
 
 REQUIRED_USE="
-	blas? ( ^^ ( blis flexiblas mkl openblas ) )
-	sycl? ( !cuda !rocm )
+	rocm? ( ${ROCM_REQUIRED_USE} )
+	sycl? ( !cuda !rocm elibc_glibc )
 "
 
-# -r1: link against system sci-ml/ggml (shared with ::gentoo ollama) instead
-# of installing the bundled copy — the bundled install collides with
-# sci-ml/ggml on /usr/lib64/libggml* and the headers. GPU/backend support
-# now follows the system ggml build (vulkan via ggml[vulkan]); the GGML_*
-# cmake args below only matter if system-ggml is ever disabled again.
-COMMON_DEPEND="
-	>=sci-ml/ggml-0.17.0:=[openmp?,vulkan?]
-	blas? (
-		blis? ( sci-libs/blis:= )
-		flexiblas? ( sci-libs/flexiblas[blis?,mkl?,openblas?] )
-		mkl? ( sci-libs/mkl[llvm-openmp] )
-		openblas? ( sci-libs/openblas )
-	)
-	cuda? ( dev-util/nvidia-cuda-toolkit:= )
-	opencl? ( virtual/opencl )
-	rocm? (
-		>=dev-util/hip-${ROCM_VERSION}:=
-		>=sci-libs/hipBLAS-${ROCM_VERSION}:=
-		>=sci-libs/rocBLAS-${ROCM_VERSION}:=
-	)
-	sycl? (
-		dev-libs/level-zero:=
-		sci-libs/mkl[sycl(-)]
+RESTRICT="!test? ( test )"
+
+# Should be >=sci-libs/hipBLAS-${ROCM_VERSION}[${ROCM_USEDEP}]
+# But pkgcheck can't elaborate that
+RDEPEND="
+	cuda? (
+		dev-util/nvidia-cuda-toolkit:=
 	)
 	vulkan? ( media-libs/vulkan-loader )
-"
-
-DEPEND="
-	${COMMON_DEPEND}
-	server? ( dev-libs/openssl:= )
-"
-
-BDEPEND="
-	sycl? ( dev-lang/intel-oneapi-dpcpp )
-	vulkan? (
-		dev-util/vulkan-headers
-		media-libs/shaderc
+	rocm? (
+		>=dev-util/hip-${ROCM_VERSION}
+		>=sci-libs/hipBLAS-${ROCM_VERSION}
+	)
+	sycl? (
+		elibc_glibc? (
+			dev-libs/level-zero:=
+			sci-libs/mkl[sycl(-)]
+			dev-libs/intel-compute-runtime[l0]
+		)
 	)
 "
-
-RDEPEND="
-	${COMMON_DEPEND}
-	server? ( dev-libs/openssl:= )
-	sycl? ( dev-libs/intel-compute-runtime[l0] )
+DEPEND="${RDEPEND}
+	vulkan? ( dev-util/vulkan-headers )
+"
+BDEPEND="
+	vulkan? ( media-libs/shaderc )
+	sycl? ( elibc_glibc? ( dev-lang/intel-oneapi-dpcpp ) )
 "
 
-RESTRICT="mirror test"
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
+
+pkg_setup() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
 
 src_prepare() {
 	cmake_src_prepare
 
-	# cuda_src_prepare from the cuda eclass must only run when CUDA is actually
-	# enabled; the eclass exports src_prepare unconditionally otherwise.
 	if use cuda; then
 		cuda_src_prepare
 	fi
@@ -87,61 +91,44 @@ src_prepare() {
 
 src_configure() {
 	local mycmakeargs=(
-		-DLLAMA_USE_SYSTEM_GGML=ON
-		-DGGML_NATIVE=no
-		-DGGML_CCACHE=no
-		-DBUILD_SHARED_LIBS=yes
+		-DGGML_BACKEND_DL=OFF
+		-DGGML_BUILD_EXAMPLES=OFF
+		-DGGML_NATIVE=OFF
+		-DGGML_HIP_MMQ_MFMA=OFF
 
-		-DLLAMA_BUILD_TESTS=no
-		-DLLAMA_BUILD_TOOLS=yes
-		-DLLAMA_BUILD_COMMON=yes
-		-DLLAMA_BUILD_EXAMPLES="$(usex examples)"
-		-DLLAMA_BUILD_APP=no
-		-DLLAMA_BUILD_SERVER=yes
-		-DLLAMA_OPENSSL="$(usex server)"
+		# CPU Flags
+		-DGGML_AVX=$(usex cpu_flags_x86_avx)
+		-DGGML_AVX_VNNI=$(usex cpu_flags_x86_avx_vnni)
+		-DGGML_AVX2=$(usex cpu_flags_x86_avx2)
+		-DGGML_AVX512_VBMI=$(usex cpu_flags_x86_avx512vbmi)
+		-DGGML_AVX512_VNNI=$(usex cpu_flags_x86_avx512_vnni)
+		-DGGML_BMI2=$(usex cpu_flags_x86_bmi2)
+		-DGGML_FMA=$(usex cpu_flags_x86_fma3)
+		-DGGML_F16C=$(usex cpu_flags_x86_f16c)
+		-DGGML_SSE42=$(usex cpu_flags_x86_sse4_2)
 
-		-DGGML_BLAS="$(usex blas)"
-		-DGGML_CUDA=no
-		-DGGML_HIP=no
-		-DGGML_OPENCL="$(usex opencl)"
-		-DGGML_OPENMP="$(usex openmp)"
-		-DGGML_RPC="$(usex rpc)"
-		-DGGML_SYCL=no
-		-DGGML_VULKAN="$(usex vulkan)"
+		-DGGML_CUDA=$(usex cuda)
+		-DGGML_OPENMP=$(usex openmp)
+		-DGGML_HIP=$(usex rocm)
+		-DGGML_VULKAN=$(usex vulkan)
+
+		-DGGML_BUILD_TESTS=$(usex test)
 	)
 
-	if use blas; then
-		if use flexiblas; then
-			mycmakeargs+=( -DGGML_BLAS_VENDOR="FlexiBLAS" )
-		elif use blis; then
-			mycmakeargs+=( -DGGML_BLAS_VENDOR="FLAME" )
-		elif use mkl; then
-			mycmakeargs+=( -DGGML_BLAS_VENDOR="Intel10_64lp" )
-		elif use openblas; then
-			mycmakeargs+=( -DGGML_BLAS_VENDOR="OpenBLAS" )
-		fi
+	# Enable AVX512 if ANY of the avx512 flags are present
+	if use cpu_flags_x86_avx512f || use cpu_flags_x86_avx512bw; then
+		mycmakeargs+=( -DGGML_AVX512=ON )
+	else
+		mycmakeargs+=( -DGGML_AVX512=OFF )
 	fi
 
 	if use cuda; then
-		local -x CUDAHOSTCXX CUDAHOSTLD
-		CUDAHOSTCXX="$(cuda_gccdir)"
-		CUDAHOSTLD="$(tc-getCXX)"
-		[[ ! -v CUDAARCHS ]] && local CUDAARCHS="all-major"
-		mycmakeargs+=(
-			-DGGML_CUDA=yes
-			-DCMAKE_CUDA_ARCHITECTURES="${CUDAARCHS}"
-		)
 		cuda_add_sandbox -w
 		addpredict "/dev/char/"
-	fi
-
-	if use rocm; then
+		cuda_sanitize
 		mycmakeargs+=(
-			-DGGML_HIP=yes
-			-DCMAKE_HIP_ARCHITECTURES="$(get_amdgpu_flags)"
-			-DAMDGPU_TARGETS="$(get_amdgpu_flags)"
+			-DCMAKE_CUDA_FLAGS="${NVCCFLAGS}"
 		)
-		local -x HIP_PATH="${ESYSROOT}/usr"
 	fi
 
 	if use sycl; then
@@ -158,7 +145,7 @@ src_configure() {
 		# icpx/clang. Symlink only the safe C-standard headers into a minimal
 		# directory. Adding -isystem to CXXFLAGS would break g++ which is used
 		# for cmake's initial compiler test; use a wrapper instead.
-		local gcc_install_dir icpx_include icpx_wrapper
+		local gcc_install_dir icpx_include icpx_wrapper hdr
 		gcc_install_dir=$(dirname "$($(tc-getCXX) -print-libgcc-file-name)")
 		icpx_include="${T}/icpx-include"
 		mkdir -p "${icpx_include}" || die
@@ -229,8 +216,12 @@ src_configure() {
 		local -x CXX="${icpx_wrapper}"
 
 		mycmakeargs+=(
-			-DGGML_SYCL=yes
-			-DGGML_SYCL_F16=yes
+			-DGGML_SYCL=ON
+			-DGGML_SYCL_F16=ON
+			-DGGML_SYCL_TARGET=INTEL
+			# oneDNN is not packaged here; find_package(DNNL) would silently
+			# fall back anyway, so disable it explicitly for a reproducible build.
+			-DGGML_SYCL_DNN=OFF
 			-DCMAKE_PREFIX_PATH="${oneapi_root}/compiler/latest;${oneapi_root}/mkl/latest;${ESYSROOT}/usr"
 			-DCMAKE_CXX_COMPILER="${icpx_wrapper}"
 			# MKLConfig.cmake derives MKL_ROOT from its cmake file location; via
@@ -248,35 +239,4 @@ src_configure() {
 	fi
 
 	cmake_src_configure
-}
-
-src_install() {
-	cmake_src_install
-	use server || rm -f "${ED}/usr/bin/llama-server" || die
-	dodoc README.md
-}
-
-pkg_postinst() {
-	if use sycl; then
-		einfo "Intel Arc GPU inference via SYCL/Level Zero."
-		einfo "Ensure the user running llama-server is in the 'render' group:"
-		einfo "  usermod -aG render <username>"
-		einfo ""
-		einfo "Verify the A770 is detected:"
-		einfo "  llama-cli --list-devices"
-	fi
-
-	if use vulkan; then
-		einfo "Vulkan GPU inference enabled."
-		einfo "Intel Arc requires media-libs/mesa with vulkan and VIDEO_CARDS=intel."
-	fi
-
-	einfo ""
-	einfo "Run inference:"
-	einfo "  llama-cli -m /path/to/model.gguf -p 'Hello' -n 128 -ngl 999"
-	if use server; then
-		einfo ""
-		einfo "Start OpenAI-compatible server:"
-		einfo "  llama-server -m /path/to/model.gguf --port 8080 -ngl 999"
-	fi
 }
