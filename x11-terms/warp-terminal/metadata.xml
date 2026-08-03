@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<longdescription>
+		Warp is a GPU-accelerated terminal and agentic development environment
+		written in Rust. This package builds the warp-oss binary, the open-source
+		channel of the upstream repository: unlike the vendor's own builds it has
+		telemetry, crash reporting and the autoupdater compiled out. Installed as
+		warp-terminal-oss so it can coexist with a vendor-supplied Warp.
+	</longdescription>
+	<upstream>
+		<doc>https://docs.warp.dev/</doc>
+		<bugs-to>https://github.com/warpdotdev/warp/issues</bugs-to>
+		<remote-id type="github">warpdotdev/warp</remote-id>
+	</upstream>
+</pkgmetadata>
