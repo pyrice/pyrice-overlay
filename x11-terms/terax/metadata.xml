@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<longdescription>
+		Terax is an open-source terminal and development workspace built with
+		Tauri, Rust, and React. It combines a native PTY-backed terminal with a
+		code editor, file explorer, source-control tools, web preview, and AI
+		agents that can use user-supplied API keys or local models.
+	</longdescription>
+	<upstream>
+		<doc>https://terax.app/docs</doc>
+		<bugs-to>https://github.com/crynta/terax-ai/issues</bugs-to>
+		<remote-id type="github">crynta/terax-ai</remote-id>
+	</upstream>
+</pkgmetadata>
