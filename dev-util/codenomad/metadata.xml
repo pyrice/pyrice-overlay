@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="tauri">Build/install using Tauri webview backend instead of Electron</flag>
+	</use>
+	<longdescription>
+		CodeNomad is a desktop GUI client and server monorepo workspace for AI
+		coding assistants, supporting compact conversation views, tool-level
+		expansion controls, and multi-session workspace tracking.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/NeuralNomadsAI/CodeNomad/issues</bugs-to>
+		<remote-id type="github">NeuralNomadsAI/CodeNomad</remote-id>
+	</upstream>
+</pkgmetadata>
