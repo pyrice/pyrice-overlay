@@ -1,0 +1,22 @@
+[Unit]
+Description=LiteLLM Proxy Service
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+DynamicUser=yes
+LoadCredentialEncrypted=litellm.database-password:/etc/credstore.encrypted/litellm.database-password
+Environment=DATABASE_HOST=127.0.0.1
+Environment=DATABASE_PORT=5432
+Environment=DATABASE_USERNAME=litellm
+Environment=DATABASE_NAME=litellm
+Environment=LITELLM_PORT=4000
+ExecStart=/usr/libexec/litellm-start
+Restart=always
+LogsDirectory=litellm
+ConfigurationDirectory=litellm
+ProtectSystem=strict
+ProtectHome=yes
+
+[Install]
+WantedBy=multi-user.target

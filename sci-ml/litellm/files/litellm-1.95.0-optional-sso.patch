@@ -1,0 +1,52 @@
+diff --git a/litellm/proxy/management_endpoints/sso/__init__.py b/litellm/proxy/management_endpoints/sso/__init__.py
+index 6dc8d88..004c678 100644
+--- a/litellm/proxy/management_endpoints/sso/__init__.py
++++ b/litellm/proxy/management_endpoints/sso/__init__.py
+@@ -4,8 +4,18 @@ SSO (Single Sign-On) related modules for LiteLLM Proxy.
+ This package contains custom SSO implementations and utilities.
+ """
+ 
+-from litellm.proxy.management_endpoints.sso.custom_microsoft_sso import (
+-    CustomMicrosoftSSO,
+-)
++try:
++    from litellm.proxy.management_endpoints.sso.custom_microsoft_sso import (
++        CustomMicrosoftSSO,
++    )
++except ModuleNotFoundError as exc:
++    if exc.name != "fastapi_sso":
++        raise
++
++    class CustomMicrosoftSSO:
++        def __init__(self, *args, **kwargs):
++            raise ModuleNotFoundError(
++                "Microsoft SSO requires the optional fastapi-sso package"
++            )
+ 
+ __all__ = ["CustomMicrosoftSSO"]
+diff --git a/litellm/proxy/management_endpoints/types.py b/litellm/proxy/management_endpoints/types.py
+index 43c28c4..d12d3fa 100644
+--- a/litellm/proxy/management_endpoints/types.py
++++ b/litellm/proxy/management_endpoints/types.py
+@@ -4,9 +4,20 @@ Types for the management endpoints
+ Might include fastapi/proxy requirements.txt related imports
+ """
+ 
+-from typing import Any, Dict, List, Optional, cast
++from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+ 
+-from fastapi_sso.sso.base import OpenID
++if TYPE_CHECKING:
++    from fastapi_sso.sso.base import OpenID
++else:
++    try:
++        from fastapi_sso.sso.base import OpenID
++    except ModuleNotFoundError as exc:
++        if exc.name != "fastapi_sso":
++            raise
++        from pydantic import BaseModel
++
++        class OpenID(BaseModel):
++            """Placeholder used when optional SSO support is unavailable."""
+ 
+ from litellm.proxy._types import LitellmUserRoles

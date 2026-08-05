@@ -3,9 +3,20 @@
 <pkgmetadata>
 	<maintainer type="person">
 		<email>andersson.kent@gmail.com</email>
-                <name>Kent Andersson</name>
+		<name>Kent Andersson</name>
 	</maintainer>
 	<upstream>
+		<remote-id type="pypi">litellm</remote-id>
 		<remote-id type="github">BerriAI/litellm</remote-id>
 	</upstream>
+	<longdescription>
+		Provides the open-source LiteLLM SDK, all three command entrypoints, the
+		default Uvicorn gateway, basic configuration and model routing, and health
+		endpoints. It intentionally excludes MCP, custom-code guardrails, Gunicorn
+		and Granian, Focus and Polars integrations, profiling, database and queue
+		extras, enterprise code, SSO, and optional cloud-provider SDKs.
+		Boto3 and Redis are retained only because the minimal gateway imports them
+		during startup; their presence does not enable supported cloud-provider or
+		database feature scope.
+	</longdescription>
 </pkgmetadata>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<changelog>https://www.maturin.rs/changelog.html</changelog>
+		<remote-id type="github">PyO3/maturin</remote-id>
+		<remote-id type="pypi">maturin</remote-id>
+	</upstream>
+	<longdescription>
+		Temporary exact Maturin 1.9.4 provider required by LiteLLM 1.95.0's
+		PEP 517 build-system pin. It can be retired when Gentoo again provides
+		the required version or LiteLLM relaxes the exact requirement.
+	</longdescription>
+</pkgmetadata>
