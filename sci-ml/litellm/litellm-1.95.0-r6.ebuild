@@ -284,6 +284,13 @@ PATCHES=( "${FILESDIR}/${P}-optional-sso.patch" )
 # Gentoo compatibility waivers tested by python_test(): cryptography-49.0.0
 # (upstream <49), importlib-metadata-9.0.0 (<9), rich-15.0.0 (<14), and
 # websockets-16.0 (<16). Portage retains upstream floors without overpinning.
+#
+# litellm-proxy-extras carries the Prisma migrations. The shipped litellm.service
+# sets DATABASE_URL and starts the proxy without --use_prisma_db_push, so
+# PrismaManager.setup_database() takes its use_migrate branch and imports
+# litellm_proxy_extras.utils; without it that import is caught and database
+# setup silently returns False. Upstream requires the version exactly, hence
+# the ~ pin, which still admits Gentoo revisions.
 RDEPEND="
 	$(python_gen_cond_dep '
 		>=dev-python/aiohttp-3.10.0[${PYTHON_USEDEP}]
@@ -316,7 +323,8 @@ RDEPEND="
 		~dev-python/fastapi-0.136.3[${PYTHON_USEDEP}]
 		>=dev-python/inquirerpy-0.3.4[${PYTHON_USEDEP}]
 		<dev-python/inquirerpy-1[${PYTHON_USEDEP}]
-		dev-python/orjson[${PYTHON_USEDEP}]
+		>=dev-python/orjson-3.11.6[${PYTHON_USEDEP}]
+		>=dev-python/prisma-0.15.0[${PYTHON_USEDEP}]
 		>=dev-python/pydantic-settings-2.14.1[${PYTHON_USEDEP}]
 		<dev-python/pydantic-settings-3[${PYTHON_USEDEP}]
 		>=dev-python/pyjwt-2.13.0[${PYTHON_USEDEP}]
@@ -339,6 +347,9 @@ RDEPEND="
 		>=dev-python/uvloop-0.21.0[${PYTHON_USEDEP}]
 		<dev-python/uvloop-1[${PYTHON_USEDEP}]
 		>=dev-python/websockets-15.0.1[${PYTHON_USEDEP}]
+	')
+	$(python_gen_cond_dep '
+		~sci-ml/litellm-proxy-extras-0.4.81[${PYTHON_USEDEP}]
 	')
 	>=sci-ml/tokenizers-0.21.0[${PYTHON_SINGLE_USEDEP}]
 	<sci-ml/tokenizers-1[${PYTHON_SINGLE_USEDEP}]
@@ -368,6 +379,7 @@ python_test() {
 	cd "${T}" || die
 	local -x LITELLM_LOCAL_MODEL_COST_MAP=True
 	local -x LITELLM_TELEMETRY=False
+	local -x PYTHONPATH="${BUILD_DIR}/install$(python_get_sitedir):${PYTHONPATH}"
 	local -x PATH="${BUILD_DIR}/install/usr/bin:${PATH}"
 	local command
 	for command in litellm lite litellm-proxy; do
@@ -397,6 +409,17 @@ python_test() {
 		    assert actual == expected, f"{package}: expected {expected}, got {actual}"
 		print(f"PASS: Gentoo compatibility versions {compat_versions}")
 		assert litellm.__file__ and _native.__file__
+
+		# The guarded import in PrismaManager.setup_database()'s use_migrate
+		# branch: it swallows ImportError, so only an explicit check proves the
+		# migration payload is reachable at runtime.
+		assert importlib.metadata.version("litellm-proxy-extras") == "0.4.81"
+		from litellm_proxy_extras.utils import ProxyExtrasDBManager
+
+		migrations = ProxyExtrasDBManager._get_prisma_dir()
+		assert os.path.isfile(os.path.join(migrations, "schema.prisma"))
+		assert len(ProxyExtrasDBManager._get_migration_names(migrations)) == 141
+		print("PASS: proxy-extras migration payload reachable")
 		router = litellm.Router(
 		    model_list=[{
 		        "model_name": "local-test",
@@ -441,7 +464,9 @@ python_test() {
 		        except OSError:
 		            time.sleep(0.25)
 		    else:
-		        raise AssertionError("proxy did not become healthy")
+		        process.terminate()
+		        out, _ = process.communicate()
+		        raise AssertionError(f"proxy did not become healthy. Output:\n{out}")
 		    if process.poll() is not None:
 		        raise AssertionError(process.stdout.read())
 		finally:
@@ -466,4 +491,18 @@ python_install_all() {
 
 	insinto /etc/litellm
 	newins "${FILESDIR}"/config.yaml.example config.yaml
+}
+
+pkg_postinst() {
+	elog "LiteLLM service setup instructions:"
+	elog "1. To store encrypted PostgreSQL credentials for systemd LoadCredentialEncrypted:"
+	elog "   mkdir -p /etc/credstore.encrypted"
+	elog "   echo -n \"your_postgres_password\" | systemd-creds encrypt --name=litellm.database-password - /etc/credstore.encrypted/litellm.database-password"
+	elog "   chmod 0600 /etc/credstore.encrypted/litellm.database-password"
+	elog ""
+	elog "2. To generate the Prisma Python client for PostgreSQL database support:"
+	elog "   prisma generate --schema /usr/lib/python3.14/site-packages/litellm/proxy/schema.prisma"
+	elog ""
+	elog "3. Configuration file: /etc/litellm/config.yaml"
+	elog "   Start service: systemctl enable --now litellm.service"
 }

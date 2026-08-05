@@ -11,6 +11,24 @@ Environment=DATABASE_PORT=5432
 Environment=DATABASE_USERNAME=litellm
 Environment=DATABASE_NAME=litellm
 Environment=LITELLM_PORT=4000
+# prisma migrate deploy shells out to the Prisma CLI, which by default
+# npm-installs itself below $HOME on first use. Under DynamicUser that path is
+# unwritable, and a service-writable cache does not help either: the resolved
+# location sits below /var/cache/private, which the dynamic user cannot
+# traverse, so spawning the schema engine fails with EACCES. Both problems
+# disappear when the CLI is pre-seeded somewhere root-owned and executable —
+# ensure_cached() performs no writes once the directory, its package.json and
+# its entrypoint all exist. See README.md for populating this directory.
+Environment=PRISMA_BINARY_CACHE_DIR=/usr/libexec/prisma/cli
+# When the database already has tables but no _prisma_migrations table — the
+# state left by an earlier `prisma db push` — migrate deploy fails with P3005
+# and litellm baselines the database instead. That writes into its own package
+# directory below /usr, which is read-only, and the resulting OSError is not
+# caught: the proxy exits and systemd restart-loops. LITELLM_MIGRATION_DIR
+# redirects the whole migration set to a writable copy; StateDirectory gives
+# the dynamic user that location.
+Environment=LITELLM_MIGRATION_DIR=/var/lib/litellm/prisma
+StateDirectory=litellm
 ExecStart=/usr/libexec/litellm-start
 Restart=always
 LogsDirectory=litellm

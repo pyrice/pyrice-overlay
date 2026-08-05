@@ -10,6 +10,14 @@ echo -n "your_postgres_password" | systemd-creds encrypt --name=litellm.database
 chmod 0600 /etc/credstore.encrypted/litellm.database-password
 ```
 
+## Prisma Database Setup
+
+When using PostgreSQL with LiteLLM, generate the Prisma Python client once as root after package installation:
+
+```bash
+prisma generate --schema /usr/lib/python3.14/site-packages/litellm/proxy/schema.prisma
+```
+
 ## Service Management
 
 The systemd unit uses `DynamicUser=yes`, `LogsDirectory=litellm`, and `ConfigurationDirectory=litellm`.
