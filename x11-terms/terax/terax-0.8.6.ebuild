@@ -41,6 +41,8 @@ BDEPEND="
 # whose src-tauri/Cargo.toml is itself a workspace root.
 ECARGO_VENDOR="${WORKDIR}/vendor"
 
+PATCHES=( "${FILESDIR}/${P}-updater-timeout.patch" )
+
 src_unpack() {
 	cargo_src_unpack
 	mv "${WORKDIR}/node_modules" "${S}/" || die "failed to place vendored node_modules"
@@ -49,6 +51,7 @@ src_unpack() {
 src_configure() {
 	cargo_src_configure \
 		--manifest-path src-tauri/Cargo.toml \
+		--features tauri/custom-protocol \
 		--locked
 }
 
@@ -60,7 +63,9 @@ src_compile() {
 }
 
 src_install() {
-	dobin "src-tauri/$(cargo_target_dir)/terax"
+	exeinto /usr/libexec
+	newexe "src-tauri/$(cargo_target_dir)/terax" terax-bin
+	dobin "${FILESDIR}/terax"
 
 	newicon -s 512 src-tauri/icons/icon.png app.crynta.terax.png
 	make_desktop_entry --eapi9 terax \

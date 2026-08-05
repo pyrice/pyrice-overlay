@@ -1,0 +1,10 @@
+--- a/src/modules/updater/useUpdater.ts
++++ b/src/modules/updater/useUpdater.ts
+@@ -51,6 +51,7 @@ async function checkLinuxRelease(): Promise<ManualUpdateInfo | null> {
+     getVersion(),
+     fetch(GITHUB_LATEST_RELEASE, {
+       headers: { Accept: "application/vnd.github+json" },
++      signal: AbortSignal.timeout(3000),
+     }),
+   ]);
+   if (!res.ok) {

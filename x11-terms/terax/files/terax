@@ -1,0 +1,4 @@
+#!/bin/sh
+# Prevent WebKitGTK DMA-BUF IPC rendering hangs on certain Linux GPU drivers
+export WEBKIT_DISABLE_DMABUF_RENDERER="${WEBKIT_DISABLE_DMABUF_RENDERER:-1}"
+exec /usr/libexec/terax-bin "$@"
