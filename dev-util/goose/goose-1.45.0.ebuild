@@ -81,6 +81,11 @@ src_prepare() {
 	default
 	mkdir -p "${WORKDIR}/vendor/v8" || die
 	echo '{"files":{}}' > "${WORKDIR}/vendor/v8/.cargo-checksum.json" || die
+
+	if use gui; then
+		sed -i 's/let cfg = {/let cfg = {\n  electronZipDir: process.env.ELECTRON_CACHE_DIR,/' \
+			ui/desktop/forge.config.ts || die "Failed to patch forge.config.ts for electronZipDir"
+	fi
 }
 
 src_compile() {
