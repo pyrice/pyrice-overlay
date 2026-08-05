@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<upstream>
+		<remote-id type="pypi">litellm-proxy-extras</remote-id>
+		<remote-id type="github">BerriAI/litellm</remote-id>
+	</upstream>
+	<longdescription>
+		Carries the Prisma schema and the ordered SQL migration set that the
+		LiteLLM proxy applies to its PostgreSQL database, split out of the main
+		litellm distribution to keep that package small. It is versioned
+		independently of litellm; litellm-1.95.0 requires exactly 0.4.81.
+		The package is placed in sci-ml alongside sci-ml/litellm rather than in
+		dev-python, so that the proxy and its version-locked data package stay in
+		one category.
+	</longdescription>
+</pkgmetadata>
