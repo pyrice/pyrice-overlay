@@ -126,9 +126,7 @@ src_install() {
 	if use gui; then
 		insinto /opt/Goose
 		doins -r ui/desktop/out/Goose-linux-x64/*
-		fperms 0755 /opt/Goose/Goose
-		fperms 0755 /opt/Goose/chrome-sandbox
-		fperms 0755 /opt/Goose/chrome_crashpad_handler
+		fperms -R 0755 /opt/Goose
 
 		dosym ../../opt/Goose/Goose /usr/bin/goose-gui
 
