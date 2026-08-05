@@ -12,8 +12,7 @@ HOMEPAGE="https://terax.app/ https://github.com/crynta/terax-ai"
 SRC_URI="
 	https://localhost/distfiles/${P}.tar.xz
 	https://localhost/distfiles/${P}-vendor.tar.xz
-	https://localhost/distfiles/${P}-pnpm-store.tar.xz
-	https://registry.npmjs.org/pnpm/-/pnpm-11.9.0.tgz
+	https://localhost/distfiles/${P}-node_modules.tar.xz
 "
 
 LICENSE="
@@ -42,6 +41,11 @@ BDEPEND="
 # whose src-tauri/Cargo.toml is itself a workspace root.
 ECARGO_VENDOR="${WORKDIR}/vendor"
 
+src_unpack() {
+	cargo_src_unpack
+	mv "${WORKDIR}/node_modules" "${S}/" || die "failed to place vendored node_modules"
+}
+
 src_configure() {
 	cargo_src_configure \
 		--manifest-path src-tauri/Cargo.toml \
@@ -49,15 +53,8 @@ src_configure() {
 }
 
 src_compile() {
-	local pnpm=( node "${WORKDIR}/package/bin/pnpm.mjs" )
-
-	PNPM_CONFIG_UPDATE_NOTIFIER=false "${pnpm[@]}" install \
-		--offline \
-		--frozen-lockfile \
-		--store-dir "${WORKDIR}/pnpm-store" \
-		|| die "pnpm install failed"
-	PNPM_CONFIG_UPDATE_NOTIFIER=false "${pnpm[@]}" run build \
-		|| die "frontend build failed"
+	./node_modules/.bin/tsc || die "TypeScript compilation failed"
+	./node_modules/.bin/vite build || die "frontend build failed"
 
 	cargo_src_compile
 }
