@@ -5,6 +5,9 @@
 		<email>andersson.kent@gmail.com</email>
 		<name>Kent Andersson</name>
 	</maintainer>
+	<use>
+		<flag name="gui">Build the Electron desktop application</flag>
+	</use>
 	<longdescription>
 		Goose is an open-source AI agent that automates complex engineering tasks directly from your terminal.
 	</longdescription>
