@@ -33,6 +33,14 @@ DEPEND="
 
 DOCS=( "AUTHORS" "LICENSE" "README.md" )
 
+# Upstream needs WEBKIT_DISABLE_DMABUF_RENDERER for its own WebKitGTK view and
+# installs it through doenvd, which exports it from /etc/profile.env into every
+# session. That disables hardware rendering for every WebKitGTK application on
+# the machine — measurably so: it made x11-terms/terax lag by seconds per
+# keystroke on Wayland with an Intel Arc GPU. The patch moves the same setting
+# into this process, before the WebKit2 import, and the envd file is dropped.
+PATCHES=( "${FILESDIR}/${P}-scope-webkit-dmabuf-workaround.patch" )
+
 python_install_all() {
 	distutils-r1_python_install_all
 
@@ -44,9 +52,6 @@ python_install_all() {
 	insinto "/usr/share/doc/${PF}/"
 	insopts "-m440"
 	doins -r "sudoers.d/"
-
-	echo 'WEBKIT_DISABLE_DMABUF_RENDERER=1' > "${T}/99${PN}" || die "${msg}"
-	doenvd "${T}/99${PN}"
 }
 
 pkg_postinst() {
@@ -57,4 +62,15 @@ pkg_postinst() {
 	einfo "Edit it to suit your needs and copy it to '/etc/sudoers.d/openconnect'."
 	einfo "sudo requires that this file be owned by root:root"
 	einfo "and its permissions be set to 440 (-r--r-----)."
+
+	if [[ -n ${REPLACING_VERSIONS} ]]; then
+		elog ""
+		elog "This revision no longer installs /etc/env.d/99${PN}, which set"
+		elog "WEBKIT_DISABLE_DMABUF_RENDERER=1 for every session and thereby"
+		elog "disabled hardware rendering in all WebKitGTK applications."
+		elog "${PN} now sets it for itself only."
+		elog ""
+		elog "Run 'env-update' and start a new session; until you log in again"
+		elog "the old value is still exported from /etc/profile.env."
+	fi
 }

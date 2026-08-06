@@ -1,0 +1,15 @@
+--- a/openconnect_pulse_gui/openconnect_pulse_gui.py
++++ b/openconnect_pulse_gui/openconnect_pulse_gui.py
+@@ -21,6 +21,12 @@
+ except ImportError:
+     from urlparse import urlparse, urlunparse
+ 
++# Gentoo: keep the WebKitGTK DMA-BUF workaround inside this process.
++# Upstream ships it as a system-wide /etc/env.d entry, which disables
++# hardware rendering for every WebKitGTK application on the machine.
++# setdefault leaves it overridable once a driver no longer needs it.
++os.environ.setdefault("WEBKIT_DISABLE_DMABUF_RENDERER", "1")
++
+ gi.require_version("Gtk", "3.0")
+ gi.require_version("WebKit2", "4.1")
+ from gi.repository import Gtk, WebKit2, GLib
