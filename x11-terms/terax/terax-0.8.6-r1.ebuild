@@ -63,9 +63,7 @@ src_compile() {
 }
 
 src_install() {
-	exeinto /usr/libexec
-	newexe "src-tauri/$(cargo_target_dir)/terax" terax-bin
-	dobin "${FILESDIR}/terax"
+	dobin "src-tauri/$(cargo_target_dir)/terax"
 
 	newicon -s 512 src-tauri/icons/icon.png app.crynta.terax.png
 	make_desktop_entry --eapi9 terax \
