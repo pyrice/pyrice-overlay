@@ -1,0 +1,239 @@
+--- a/src/app/App.tsx
++++ b/src/app/App.tsx
+@@ -6,6 +6,7 @@
+ import { Toaster } from "@/components/ui/sonner";
+ import { TooltipProvider } from "@/components/ui/tooltip";
+ import { consumeLaunchFiles, getLaunchDir } from "@/lib/launchDir";
++import { IS_MAC } from "@/lib/platform";
+ import { quoteShellArg } from "@/lib/shellQuote";
+ import { usePresence } from "@/lib/usePresence";
+ import { useZoom } from "@/lib/useZoom";
+@@ -51,6 +52,7 @@
+   shouldDisablePaneSwapShortcut,
+   type ShortcutHandlers,
+   type ShortcutId,
++  TERMINAL_RESERVED_CHORD_IDS,
+   useGlobalShortcuts,
+ } from "@/modules/shortcuts";
+ import {
+@@ -875,6 +877,18 @@
+       ) {
+         return !(activeTab?.kind === "terminal" && activeTab.blocks === true);
+       }
++      if (!IS_MAC && TERMINAL_RESERVED_CHORD_IDS.has(id)) {
++        // Off macOS the primary modifier is Ctrl, so these ids answer to a
++        // terminal control code — Ctrl+D is EOT, Ctrl+[ is ESC, Ctrl+I is TAB.
++        // Hand the plain chord to a focused terminal; we never preventDefault
++        // when disabled, so the keystroke continues on to xterm. Any variant
++        // carrying Shift or Alt is the always-on binding and is never
++        // deferred, the same split as the Ctrl+B / Ctrl+Shift+B pair below.
++        if (e.shiftKey || e.altKey) return false;
++        const target =
++          (e.target as HTMLElement | null) ?? document.activeElement;
++        return !!(target as HTMLElement | null)?.closest?.(".xterm");
++      }
+       if (id === "sidebar.toggle") {
+         // Ctrl+B is also Claude Code's "run in background" key. While a terminal
+         // is focused, let Ctrl+B reach the shell/Claude instead of toggling the
+--- a/src/modules/shortcuts/index.ts
++++ b/src/modules/shortcuts/index.ts
+@@ -1,6 +1,7 @@
+ export {
+   SHORTCUTS,
+   SHORTCUT_GROUPS,
++  TERMINAL_RESERVED_CHORD_IDS,
+   getBindingTokens,
+   type Shortcut,
+   type ShortcutGroup,
+--- a/src/modules/shortcuts/shortcuts.ts
++++ b/src/modules/shortcuts/shortcuts.ts
+@@ -77,12 +77,57 @@
+   allowRepeat?: boolean;
+ };
+ 
++/**
++ * Chords that mean something to a terminal before they mean anything to us.
++ *
++ * MOD_PROP is Meta on macOS but Ctrl everywhere else, so each ⌘+<key> below
++ * becomes Ctrl+<key> on Linux/Windows — which is how a POSIX terminal encodes
++ * a control character. Ctrl+D is EOT, Ctrl+[ is ESC, Ctrl+I is TAB. While a
++ * terminal pane has focus App.tsx defers these ids, so the keystroke reaches
++ * the PTY instead of being swallowed by the app; everywhere else in the UI
++ * they keep working. This is the reasoning upstream already applied to Ctrl+B
++ * (see sidebar.toggle) and to ⌘K (see terminal.clear); it just has to cover
++ * every colliding chord, not one.
++ *
++ * Where a deferred id also carries an always-on chord, that chord is
++ * Ctrl+Shift+<letter>. It is the only class xterm.js leaves inert: its
++ * control-character branch requires !shiftKey, whereas Ctrl+Alt+<letter> is
++ * forwarded as ESC+<control char> — and readline binds precisely these
++ * letters (\e\C-d, \e\C-e, \e\C-f, \e\C-g, \e\C-i, \e\C-r, \e\C-t, \e\C-]),
++ * so Ctrl+Alt would relocate the bug rather than fix it. Ctrl+Shift+C and
++ * Ctrl+Shift+V are the terminal's own copy/paste and are equally unavailable.
++ */
++export const TERMINAL_RESERVED_CHORD_IDS: ReadonlySet<ShortcutId> =
++  new Set<ShortcutId>([
++    "commandPalette.open", // Ctrl+P — previous-history
++    "tab.new", // Ctrl+T — transpose-chars
++    "tab.newEditor", // Ctrl+E — end-of-line
++    "tab.newPrivate", // Ctrl+R — reverse-i-search
++    "tab.close", // Ctrl+W — kill-word-backward
++    "pane.splitRight", // Ctrl+D — EOT / end-of-file
++    "pane.focusPrev", // Ctrl+[ — ESC
++    "pane.focusNext", // Ctrl+] — GS
++    "pane.source", // Ctrl+G — abort
++    "search.focus", // Ctrl+F — forward-char
++    "ai.toggle", // Ctrl+I — TAB
++  ]);
++
+ export const SHORTCUTS: Shortcut[] = [
+   {
+     id: "commandPalette.open",
+     label: "Open command palette",
+     group: "General",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "p" }],
++    // Ctrl+P is readline's previous-history. Ctrl+Shift+P is taken by "Find in
++    // files", so the always-on chord is Ctrl+Shift+K — Ctrl+K is the palette
++    // key users arrive with from other tools, and plain Ctrl+K has to stay
++    // with readline's kill-line. This one matters most: it is the entry point
++    // for every command below that could not keep a chord of its own.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "p" }]
++      : [
++          { ctrl: true, key: "p" },
++          { ctrl: true, shift: true, key: "k" },
++        ],
+   },
+   {
+     id: "commandPalette.content",
+@@ -100,7 +145,14 @@
+     id: "tab.new",
+     label: "New tab",
+     group: "Tabs",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "t" }],
++    // Ctrl+T is readline's transpose-chars. Ctrl+Shift+T is the Blocks
++    // variant, so "new" takes Ctrl+Shift+N.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "t" }]
++      : [
++          { ctrl: true, key: "t" },
++          { ctrl: true, shift: true, key: "n" },
++        ],
+   },
+   {
+     id: "tab.newBlock",
+@@ -112,7 +164,14 @@
+     id: "tab.newPrivate",
+     label: "New private terminal",
+     group: "Tabs",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "r" }],
++    // Ctrl+R is readline's reverse-i-search — the chord a shell user reaches
++    // for most. Ctrl+Shift+R is free, so the same letter carries over.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "r" }]
++      : [
++          { ctrl: true, key: "r" },
++          { ctrl: true, shift: true, key: "r" },
++        ],
+   },
+   {
+     id: "tab.newPreview",
+@@ -125,18 +184,32 @@
+     id: "tab.newEditor",
+     label: "New editor tab",
+     group: "Tabs",
++    // Ctrl+E is readline's end-of-line. No always-on chord: Ctrl+Shift+E is
++    // "Toggle file explorer focus" and no free letter names "editor". Opening
++    // an editor is a once-in-a-while action — palette or tab bar.
+     defaultBindings: [{ [MOD_PROP]: true, key: "e" }],
+   },
+   {
+     id: "tab.close",
+     label: "Close tab or pane",
+     group: "Tabs",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "w" }],
++    // Ctrl+W is readline's kill-word-backward. Ctrl+Shift+W is free and is
++    // what GNOME Terminal and Konsole already use to close a tab.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "w" }]
++      : [
++          { ctrl: true, key: "w" },
++          { ctrl: true, shift: true, key: "w" },
++        ],
+   },
+   {
+     id: "pane.splitRight",
+     label: "Split pane right",
+     group: "Panes",
++    // Ctrl+D is EOT — the reason this whole list exists. No always-on chord:
++    // Ctrl+Shift+D is its own sibling "Split pane down", which stays reachable
++    // from a terminal and covers the keyboard case, and no free letter names
++    // "right". The palette (Ctrl+Shift+K) runs it.
+     defaultBindings: [{ [MOD_PROP]: true, key: "d" }],
+   },
+   {
+@@ -149,13 +222,27 @@
+     id: "pane.focusNext",
+     label: "Focus next pane",
+     group: "Panes",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "]" }],
++    // Ctrl+] is GS (and character-search in readline); Ctrl+Shift+] is already
++    // "Next space". Ctrl+Shift+L instead — vim's l, move right.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "]" }]
++      : [
++          { ctrl: true, key: "]" },
++          { ctrl: true, shift: true, key: "l" },
++        ],
+   },
+   {
+     id: "pane.focusPrev",
+     label: "Focus previous pane",
+     group: "Panes",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "[" }],
++    // Ctrl+[ *is* ESC — losing it breaks vim inside the terminal. Ctrl+Shift+[
++    // is already "Previous space", so Ctrl+Shift+H — vim's h, move left.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "[" }]
++      : [
++          { ctrl: true, key: "[" },
++          { ctrl: true, shift: true, key: "h" },
++        ],
+   },
+   {
+     id: "pane.swapLeft",
+@@ -185,7 +272,14 @@
+     id: "pane.source",
+     label: "Toggle source panel",
+     group: "Panes",
+-    defaultBindings: [{ [MOD_PROP]: true, key: "g" }],
++    // Ctrl+G is readline's abort. Ctrl+Shift+G is free, so the same letter
++    // carries over — and it matches the Git-panel chord editors already use.
++    defaultBindings: IS_MAC
++      ? [{ meta: true, key: "g" }]
++      : [
++          { ctrl: true, key: "g" },
++          { ctrl: true, shift: true, key: "g" },
++        ],
+   },
+   {
+     id: "terminal.clear",
+@@ -264,12 +358,18 @@
+     id: "search.focus",
+     label: "Find in tab",
+     group: "Search",
++    // Ctrl+F is readline's forward-char. No always-on chord: Ctrl+Shift+F is
++    // "Search files" and the remaining free letters spell nothing like "find".
++    // Reached from the palette or the header search box.
+     defaultBindings: [{ [MOD_PROP]: true, key: "f" }],
+   },
+   {
+     id: "ai.toggle",
+     label: "Toggle AI agent",
+     group: "AI",
++    // Ctrl+I *is* TAB, so a terminal must have it — completion depends on it.
++    // No always-on chord: Ctrl+Shift+I is the sibling "Toggle AI chat window",
++    // which keeps working from a terminal and covers the keyboard case.
+     defaultBindings: [{ [MOD_PROP]: true, key: "i" }],
+   },
+   {

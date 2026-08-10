@@ -1,0 +1,17 @@
+--- a/src/modules/terminal/lib/rendererPool.ts
++++ b/src/modules/terminal/lib/rendererPool.ts
+@@ -254,7 +254,13 @@
+     // composed string through its own compositionend handler instead.
+     // keyCode 229 ("Process") is what Chromium reports for every key
+     // pressed inside an active IME session when isComposing is not yet set.
+-    if (event.isComposing || event.keyCode === 229) return false;
++    // Chromium only reports it on keydown, and suppresses keypress entirely
++    // while composing, so restrict the sentinel to keydown. On keypress
++    // WebKitGTK reports the character's own code point, and U+00E5 "å" is
++    // 229 — an unrestricted check silently swallows every å typed on a
++    // Nordic layout while ä (228) and ö (246) pass through.
++    if (event.isComposing) return false;
++    if (event.type === "keydown" && event.keyCode === 229) return false;
+ 
+     const leafId = slot.currentLeafId;
+     if (leafId === null) return false;
