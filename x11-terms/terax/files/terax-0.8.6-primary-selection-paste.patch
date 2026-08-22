@@ -1,0 +1,81 @@
+--- a/src/modules/terminal/lib/rendererPool.ts
++++ b/src/modules/terminal/lib/rendererPool.ts
+@@ -301,6 +301,8 @@
+     adapter?.resolveLeaf(leafId)?.writeToPty(data);
+   });
+ 
++  bindPrimarySelectionPaste(slot);
++
+   slots.push(slot);
+   return slot;
+ }
+@@ -1040,6 +1042,69 @@
+   typeof navigator !== "undefined" &&
+   /Mac|iPhone|iPad/.test(navigator.userAgent);
+ 
++const IS_LINUX =
++  typeof navigator !== "undefined" &&
++  /Linux/.test(navigator.userAgent) &&
++  !/Android/.test(navigator.userAgent);
++
++/** Upper bound on the gap between the middle click and the paste WebKit
++ * raises for it. The paste arrives a macrotask later, so the arm cannot be
++ * dropped on a zero-delay timer; expiring it by event timestamp keeps an
++ * unrelated later paste from being claimed without racing that dispatch. */
++const PRIMARY_PASTE_WINDOW_MS = 1000;
++
++/**
++ * Middle-click paste of the X11/Wayland PRIMARY selection.
++ *
++ * xterm parks its 1x1 helper textarea under the pointer in its own `auxclick`
++ * handler so the platform's middle-click paste lands in the terminal, and
++ * WebKitGTK does perform that paste — the primary selection is inserted into
++ * the textarea correctly. The `paste` event raised alongside it, however,
++ * carries the CLIPBOARD contents in `clipboardData`, not the primary
++ * selection, so xterm's paste handler forwards the wrong text (or nothing at
++ * all when the clipboard happens to be empty).
++ *
++ * Take the text from the textarea, which holds the real primary selection,
++ * and keep xterm's handler from seeing this one event. The web clipboard API
++ * is no help here: it exposes only CLIPBOARD, never PRIMARY.
++ */
++function bindPrimarySelectionPaste(slot: Slot): void {
++  if (!IS_LINUX) return;
++  const root = slot.host.querySelector<HTMLElement>(".xterm");
++  const textarea = slot.host.querySelector<HTMLTextAreaElement>(
++    ".xterm-helper-textarea",
++  );
++  if (!root || !textarea) return;
++
++  let middleClickAt = Number.NEGATIVE_INFINITY;
++
++  root.addEventListener("auxclick", (event) => {
++    if (event.button !== 1) return;
++    // xterm has already moved the textarea under the cursor; clearing it means
++    // the native insert leaves the primary selection and nothing else behind.
++    textarea.value = "";
++    middleClickAt = event.timeStamp;
++  });
++
++  root.addEventListener(
++    "paste",
++    (event) => {
++      if (event.timeStamp - middleClickAt > PRIMARY_PASTE_WINDOW_MS) return;
++      middleClickAt = Number.NEGATIVE_INFINITY;
++      // The capture phase runs ahead of xterm's listeners on both the element
++      // and the textarea, so stopping here keeps clipboardData out of the PTY
++      // while leaving WebKit's own insert into the textarea intact.
++      event.stopImmediatePropagation();
++      setTimeout(() => {
++        const text = textarea.value;
++        textarea.value = "";
++        if (text) pasteIntoTerminal(slot.term, text);
++      }, 0);
++    },
++    true,
++  );
++}
++
+ function isTerminalCopy(e: KeyboardEvent): boolean {
+   return (
+     !IS_MAC &&

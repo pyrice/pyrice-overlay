@@ -41,7 +41,12 @@ BDEPEND="
 # whose src-tauri/Cargo.toml is itself a workspace root.
 ECARGO_VENDOR="${WORKDIR}/vendor"
 
-PATCHES=( "${FILESDIR}/${P}-updater-timeout.patch" )
+PATCHES=(
+	"${FILESDIR}/${P}-updater-timeout.patch"
+	"${FILESDIR}/${P}-webkit-keycode-229.patch"
+	"${FILESDIR}/${P}-terminal-chord-passthrough.patch"
+	"${FILESDIR}/${P}-primary-selection-paste.patch"
+)
 
 src_unpack() {
 	cargo_src_unpack
