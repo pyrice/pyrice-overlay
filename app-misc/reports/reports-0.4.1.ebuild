@@ -15,11 +15,10 @@ CRATES="
 	anstyle@1.0.14
 	anyhow@1.0.102
 	atoi@2.0.0
+	atomic-waker@1.1.2
 	autocfg@1.5.0
-	base64@0.21.7
 	base64@0.22.1
 	base64ct@1.8.3
-	bitflags@1.3.2
 	bitflags@2.11.0
 	block-buffer@0.10.4
 	bumpalo@3.20.2
@@ -76,7 +75,7 @@ CRATES="
 	getrandom@0.2.17
 	getrandom@0.4.2
 	ghash@0.5.1
-	h2@0.3.27
+	h2@0.4.15
 	hashbrown@0.15.5
 	hashbrown@0.16.1
 	hashlink@0.10.0
@@ -85,12 +84,14 @@ CRATES="
 	hkdf@0.12.4
 	hmac@0.12.1
 	home@0.5.12
-	http-body@0.4.6
-	http@0.2.12
+	http-body-util@0.1.3
+	http-body@1.0.1
+	http@1.4.2
 	httparse@1.10.1
-	httpdate@1.0.3
-	hyper-tls@0.5.0
-	hyper@0.14.32
+	hyper-rustls@0.27.9
+	hyper-tls@0.6.0
+	hyper-util@0.1.20
+	hyper@1.10.1
 	iana-time-zone-haiku@0.1.2
 	iana-time-zone@0.1.65
 	icu_collections@2.1.1
@@ -150,6 +151,7 @@ CRATES="
 	ppv-lite86@0.2.21
 	prettyplease@0.2.37
 	proc-macro2@1.0.106
+	quick-xml@0.36.2
 	quote@1.0.45
 	r-efi@6.0.0
 	rand@0.8.5
@@ -157,11 +159,10 @@ CRATES="
 	rand_core@0.6.4
 	redox_syscall@0.5.18
 	redox_syscall@0.7.3
-	reqwest@0.11.27
+	reqwest@0.12.28
 	ring@0.17.14
 	rsa@0.9.10
 	rustix@1.1.4
-	rustls-pemfile@1.0.4
 	rustls-pki-types@1.14.0
 	rustls-webpki@0.103.10
 	rustls@0.23.37
@@ -172,7 +173,6 @@ CRATES="
 	security-framework-sys@2.17.0
 	security-framework@3.7.0
 	semver@1.0.27
-	serde-xml-rs@0.6.0
 	serde@1.0.228
 	serde_core@1.0.228
 	serde_derive@1.0.228
@@ -186,7 +186,6 @@ CRATES="
 	signature@2.2.0
 	slab@0.4.12
 	smallvec@1.15.1
-	socket2@0.5.10
 	socket2@0.6.3
 	spin@0.9.8
 	spki@0.7.3
@@ -202,20 +201,19 @@ CRATES="
 	strsim@0.11.1
 	subtle@2.6.1
 	syn@2.0.117
-	sync_wrapper@0.1.2
+	sync_wrapper@1.0.2
 	synstructure@0.13.2
-	system-configuration-sys@0.5.0
-	system-configuration@0.5.1
+	system-configuration-sys@0.6.0
+	system-configuration@0.7.0
 	tempfile@3.27.0
-	thiserror-impl@1.0.69
 	thiserror-impl@2.0.18
-	thiserror@1.0.69
 	thiserror@2.0.18
 	tinystr@0.8.2
 	tinyvec@1.11.0
 	tinyvec_macros@0.1.1
 	tokio-macros@2.6.1
 	tokio-native-tls@0.3.1
+	tokio-rustls@0.26.4
 	tokio-stream@0.1.18
 	tokio-util@0.7.18
 	tokio@1.50.0
@@ -223,7 +221,10 @@ CRATES="
 	toml_datetime@0.6.11
 	toml_edit@0.22.27
 	toml_write@0.1.2
+	tower-http@0.6.11
+	tower-layer@0.3.3
 	tower-service@0.3.3
+	tower@0.5.3
 	tracing-attributes@0.1.31
 	tracing-core@0.1.36
 	tracing@0.1.44
@@ -262,6 +263,7 @@ CRATES="
 	windows-implement@0.60.2
 	windows-interface@0.59.3
 	windows-link@0.2.1
+	windows-registry@0.6.1
 	windows-result@0.4.1
 	windows-strings@0.5.1
 	windows-sys@0.48.0
@@ -285,7 +287,6 @@ CRATES="
 	windows_x86_64_msvc@0.48.5
 	windows_x86_64_msvc@0.52.6
 	winnow@0.7.15
-	winreg@0.50.0
 	wit-bindgen-core@0.51.0
 	wit-bindgen-rust-macro@0.51.0
 	wit-bindgen-rust@0.51.0
@@ -293,7 +294,6 @@ CRATES="
 	wit-component@0.244.0
 	wit-parser@0.244.0
 	writeable@0.6.2
-	xml-rs@0.8.28
 	yoke-derive@0.8.1
 	yoke@0.8.1
 	zerocopy-derive@0.8.47
@@ -316,7 +316,7 @@ EGIT_COMMIT="v${PV/_/-}"
 
 SRC_URI="${CARGO_CRATE_URIS}"
 
-LICENSE="|| ( MIT Apache-2.0 )"
+LICENSE="GPL-2"
 # Dependent crate licenses
 LICENSE+=" Apache-2.0 BSD CDLA-Permissive-2.0 ISC MIT Unicode-3.0 ZLIB"
 SLOT="0"
@@ -333,11 +333,6 @@ QA_FLAGS_IGNORED="usr/bin/reports"
 src_unpack() {
 	git-r3_src_unpack
 	cargo_src_unpack
-}
-
-pkg_preinst() {
-	enewgroup reports
-	enewuser reports -1 -1 /var/lib/reports reports
 }
 
 src_install() {
@@ -358,15 +353,22 @@ pkg_postinst() {
 	if use systemd; then
 		elog "To enable the daily reports service, run:"
 		elog "  systemctl enable --now reports.timer"
+		elog ""
 	fi
+	elog "Setup instructions:"
+	elog "  1. Copy and edit the config file:"
+	elog "     cp /etc/reports/config.example.toml /etc/reports/config.toml"
+	elog "     nano /etc/reports/config.toml"
 	elog ""
-	elog "Before starting the service, copy and edit the config file:"
-	elog "  cp /etc/reports/config.example.toml /etc/reports/config.toml"
-	elog "  nano /etc/reports/config.toml"
-	elog "encrypt-password 'your_database_password'"
-        elog "This will:- Generate a `.encryption_key` file (if it doesn't exist)"
-        elog "Place your encrypted keyfile at /etc/reports/keyfile"
-	elog "and ensure correct permissions:"
-	elog "  chown root:reports /etc/reports/keyfile"
-	elog "  chmod 640 /etc/reports/keyfile"
+	elog "  2. Encrypt your database password:"
+	elog "     reports encrypt-password 'your_database_password'"
+	elog ""
+	elog "  3. This generates a .encryption_key file (default location)"
+	elog "     Place encrypted password in config.toml"
+	elog ""
+	elog "  4. Ensure proper permissions:"
+	elog "     chown reports:reports /etc/reports/config.toml"
+	elog "     chown reports:reports /etc/reports/.encryption_key"
+	elog "     chmod 640 /etc/reports/config.toml"
+	elog "     chmod 640 /etc/reports/.encryption_key"
 }
