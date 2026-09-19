@@ -5,6 +5,9 @@
 		<email>andersson.kent@gmail.com</email>
 		<name>Kent Andersson</name>
 	</maintainer>
+	<use>
+		<flag name="webui">Embed the web UI assets into the compiled binary</flag>
+	</use>
 	<upstream>
 		<remote-id type="github">anomalyco/opencode</remote-id>
 	</upstream>
