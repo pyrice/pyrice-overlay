@@ -2,10 +2,11 @@
 Description=Reports data collection service
 After=network-online.target postgresql.service
 Wants=network-online.target
-# 6 starts within 4h covers the initial run plus five 20-minute retries,
-# and the window expires long before the next day's timer trigger.
-StartLimitBurst=6
-StartLimitIntervalSec=4h
+# 30 starts within 12h cover the initial run plus 29 retries at 20-minute intervals.
+# This covers the observed 13:50 to 22:10 day-ahead publication delay and expires
+# before the next day's timer trigger.
+StartLimitBurst=30
+StartLimitIntervalSec=12h
 
 [Service]
 Type=oneshot
