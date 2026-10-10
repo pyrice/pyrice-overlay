@@ -7,13 +7,17 @@ inherit desktop
 
 DESCRIPTION="An open-source AI agent for automated software development"
 HOMEPAGE="https://github.com/aaif-goose/goose"
-RUSTY_V8_V="v$(ver_rs 1 '').0"
-ELECTRON_V="41.0.0"
+# Prebuilt V8 archive expected by the vendored v8-goose crate: the default of
+# RUSTY_V8_UPSTREAM_VERSION in vendor/v8-goose/build.rs. It is independent of
+# the goose version; re-check it on every bump.
+RUSTY_V8_V="145.0.0"
+# "electron" devDependency in ui/desktop/package.json.
+ELECTRON_V="43.4.0"
 
 SRC_URI="https://github.com/aaif-goose/goose/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz
 	https://localhost/distfiles/${P}-vendor.tar.xz
-	https://github.com/denoland/rusty_v8/releases/download/${RUSTY_V8_V}/\
-librusty_v8_release_x86_64-unknown-linux-gnu.a.gz
+	https://github.com/denoland/rusty_v8/releases/download/v${RUSTY_V8_V}/\
+librusty_v8_release_x86_64-unknown-linux-gnu.a.gz -> rusty_v8-${RUSTY_V8_V}-release-x86_64-unknown-linux-gnu.a.gz
 	gui? (
 		https://localhost/distfiles/${P}-pnpm-vendor.tar.xz
 		https://github.com/electron/electron/releases/download/v${ELECTRON_V}/electron-v${ELECTRON_V}-linux-x64.zip
@@ -85,12 +89,26 @@ src_prepare() {
 	if use gui; then
 		sed -i 's/let cfg = {/let cfg = {\n  electronZipDir: process.env.ELECTRON_CACHE_DIR,/' \
 			ui/desktop/forge.config.ts || die "Failed to patch forge.config.ts for electronZipDir"
+
+		# extract-zip 2.0.1 (yauzl 2.10.0) truncates inflated entries and never
+		# settles on Node.js 26, hanging electron-packager while it unpacks the
+		# Electron zip. Extract it with app-arch/unzip instead.
+		local unzip_js=ui/node_modules/@electron/packager/dist/unzip.js
+		local old_call='await (0, extract_zip_1.default)(zipPath, { dir: targetDir });'
+		local new_call='require("child_process").execFileSync("unzip",'
+		new_call+=' ["-q", "-o", zipPath, "-d", targetDir]);'
+		sed -i \
+			-e '/require("extract-zip")/d' \
+			-e "s|${old_call}|${new_call}|" \
+			"${unzip_js}" || die
+		grep -q 'execFileSync("unzip"' "${unzip_js}" && ! grep -q extract_zip "${unzip_js}" \
+			|| die "Failed to switch electron-packager to unzip"
 	fi
 }
 
 src_compile() {
 	export CARGO_HOME="${S}/.cargo"
-	export RUSTY_V8_ARCHIVE="${DISTDIR}/librusty_v8_release_x86_64-unknown-linux-gnu.a.gz"
+	export RUSTY_V8_ARCHIVE="${DISTDIR}/rusty_v8-${RUSTY_V8_V}-release-x86_64-unknown-linux-gnu.a.gz"
 	mkdir -p "${CARGO_HOME}" || die
 	cat > "${CARGO_HOME}/config.toml" <<-EOF || die "Failed to write cargo config"
 		[source.crates-io]
@@ -116,6 +134,8 @@ src_compile() {
 
 		cd "${S}/ui/desktop" || die
 		ELECTRON_CACHE_DIR="${WORKDIR}/electron_cache" npx electron-forge package || die "Electron package build failed"
+		# npx can exit 0 when electron-forge is killed; require the packaged app.
+		[[ -x out/Goose-linux-x64/Goose ]] || die "electron-forge produced no Goose binary"
 		cd "${S}" || die
 	fi
 }
