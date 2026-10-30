@@ -1,6 +1,7 @@
 [Unit]
 Description=LiteLLM Proxy Service
-After=network.target postgresql.service
+After=network.target postgresql-18.service
+Requires=postgresql-18.service
 
 [Service]
 Type=simple
