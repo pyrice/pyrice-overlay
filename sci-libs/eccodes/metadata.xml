@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>andersson.kent@gmail.com</email>
+		<name>Kent Andersson</name>
+	</maintainer>
+	<use>
+		<flag name="aec">Support GRIB2 CCSDS compression through <pkg>sci-libs/libaec</pkg></flag>
+		<flag name="defs">Install the ecCodes definitions and samples (not needed when memfs is enabled)</flag>
+		<flag name="memfs">Embed definitions and samples in the library (memory file system)</flag>
+		<flag name="netcdf">Support GRIB to NetCDF conversion</flag>
+		<flag name="threads">Enable thread safety using POSIX threads</flag>
+	</use>
+	<upstream>
+		<remote-id type="github">ecmwf/eccodes</remote-id>
+	</upstream>
+</pkgmetadata>
