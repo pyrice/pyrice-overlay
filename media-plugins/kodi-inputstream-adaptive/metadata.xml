@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<!-- maintainer-needed -->
+	<upstream>
+		<remote-id type="github">xbmc/inputstream.adaptive</remote-id>
+	</upstream>
+	<use>
+		<flag name="test">Build and run unit tests (requires <pkg>dev-cpp/gtest</pkg>)</flag>
+	</use>
+</pkgmetadata>
