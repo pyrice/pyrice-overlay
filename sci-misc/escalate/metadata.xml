@@ -5,10 +5,10 @@
     <email>andersson.kent@gmail.com</email>
     <name>Kent Andersson</name>
   </maintainer>
-  <longdescription>ESCALATE calculates the required amount of lifting gas (helium or hydrogen) for stratospheric balloon missions. It supports multiple equations of state (Esrange tabular method, ideal gas law, AGA8 Detail, GERG-2008) and provides both CLI and interactive TUI interfaces, a container and mission history store, and a read-only HTTP API ('escalate serve') over that data. A browser front end compiled to WebAssembly offers the same calculations as an offline-capable page; it is built ahead of time and installed with USE=webui, because its wasm toolchain cannot run inside the Portage sandbox.</longdescription>
   <use>
-    <flag name="webui">Install the prebuilt browser front end under /usr/share/escalate/web, for 'escalate serve --web-root'. Without this flag the installed program has no page to serve. The front end is shipped prebuilt because its wasm toolchain (wasm32 target, wasm-bindgen, wasm-opt, trunk) is not available offline inside the Portage sandbox.</flag>
+    <flag name="webui">Install the prebuilt browser front end served by escalate serve --web-root</flag>
   </use>
+  <longdescription>ESCALATE calculates the required amount of lifting gas (helium or hydrogen) for stratospheric balloon missions. It supports multiple equations of state (Esrange tabular method, ideal gas law, AGA8 Detail, GERG-2008) and provides both CLI and interactive TUI interfaces.</longdescription>
   <upstream>
     <remote-id type="github">pyrice/escalate</remote-id>
   </upstream>
