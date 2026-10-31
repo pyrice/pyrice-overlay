@@ -1,0 +1,999 @@
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+EAPI=8
+
+DISTUTILS_EXT=1
+DISTUTILS_USE_PEP517=maturin
+DISTUTILS_SINGLE_IMPL=1
+PYTHON_COMPAT=( python3_{12..14} )
+# The locked AWS crates require more than the workspace's declared Rust 1.88.
+RUST_MIN_VER="1.94.1"
+
+CRATES="
+	adler2@2.0.1
+	ahash@0.8.12
+	aho-corasick@1.1.5
+	alloca@0.4.0
+	allocator-api2@0.2.21
+	android_system_properties@0.1.6
+	anes@0.1.6
+	anstyle@1.0.14
+	anyhow@1.0.104
+	arbitrary@1.4.2
+	arc-swap@1.9.2
+	arcstr@1.2.0
+	askama@0.16.1
+	askama_derive@0.16.1
+	askama_macros@0.16.1
+	askama_parser@0.16.1
+	asn1-rs-derive@0.6.0
+	asn1-rs-impl@0.2.0
+	asn1-rs@0.7.2
+	assert-json-diff@2.0.2
+	astral-tokio-tar@0.6.4
+	async-compression@0.4.46
+	async-lock@3.4.2
+	async-stream-impl@0.3.6
+	async-stream@0.3.6
+	async-trait@0.1.91
+	atoi@2.0.0
+	atomic-waker@1.1.2
+	autocfg@1.5.1
+	aws-config@1.9.0
+	aws-credential-types@1.3.0
+	aws-lc-rs@1.17.3
+	aws-lc-sys@0.43.0
+	aws-runtime@1.9.4
+	aws-sdk-kms@1.120.0
+	aws-sdk-s3@1.146.1
+	aws-sdk-secretsmanager@1.117.0
+	aws-sdk-sts@1.108.0
+	aws-sigv4@1.5.3
+	aws-smithy-async@1.3.0
+	aws-smithy-checksums@0.65.0
+	aws-smithy-eventstream@0.61.4
+	aws-smithy-http-client@1.4.2
+	aws-smithy-http@0.64.0
+	aws-smithy-json@0.63.1
+	aws-smithy-observability@0.3.0
+	aws-smithy-query@0.61.1
+	aws-smithy-runtime-api-macros@1.1.0
+	aws-smithy-runtime-api@1.16.2
+	aws-smithy-runtime@1.14.2
+	aws-smithy-schema@0.2.1
+	aws-smithy-types@1.6.4
+	aws-smithy-xml@0.61.1
+	aws-smithy-xml@0.62.1
+	aws-types@1.6.0
+	axum-core@0.5.6
+	axum-login@0.18.0
+	axum@0.8.9
+	azure_core@1.1.0
+	azure_core_macros@1.0.0
+	azure_identity@1.0.0
+	azure_storage_blob@1.1.0
+	azure_storage_common@1.0.0
+	base16ct@0.2.0
+	base64-simd@0.8.0
+	base64@0.13.1
+	base64@0.22.1
+	base64@0.23.1
+	base64ct@1.8.3
+	bit-set@0.8.0
+	bit-vec@0.8.0
+	bit-vec@0.9.1
+	bitflags@1.3.2
+	bitflags@2.13.1
+	block-buffer@0.10.4
+	block-buffer@0.12.1
+	bollard-buildkit-proto@0.7.0
+	bollard-stubs@1.52.1-rc.29.1.3
+	bollard@0.20.2
+	borrow-or-share@0.2.4
+	bstr@1.13.1
+	bumpalo@3.20.3
+	bytecount@0.6.9
+	byteorder@1.5.0
+	bytes-utils@0.1.4
+	bytes@1.12.1
+	cast@0.3.0
+	castaway@0.2.4
+	cc@1.3.0
+	cfg-if@1.0.4
+	cfg_aliases@0.2.2
+	chacha20@0.10.1
+	chrono@0.4.45
+	ciborium-io@0.2.2
+	ciborium-ll@0.2.2
+	ciborium@0.2.2
+	clap@4.6.7
+	clap_builder@4.6.7
+	clap_lex@1.1.0
+	cmake@0.1.58
+	cmov@0.5.4
+	combine@4.6.8
+	compact_str@0.9.1
+	compression-codecs@0.4.41
+	compression-core@0.4.33
+	const-hex@1.19.3
+	const-oid@0.10.2
+	const-oid@0.9.6
+	cookie@0.18.2
+	core-foundation-sys@0.8.7
+	core-foundation@0.10.1
+	cpufeatures@0.2.17
+	cpufeatures@0.3.0
+	crc-catalog@2.5.0
+	crc-fast@1.10.0
+	crc16@0.4.0
+	crc32c@0.6.8
+	crc32fast@1.5.1
+	crc@3.4.0
+	criterion-plot@0.8.2
+	criterion@0.8.2
+	crossbeam-channel@0.5.17
+	crossbeam-deque@0.8.7
+	crossbeam-epoch@0.9.20
+	crossbeam-queue@0.3.14
+	crossbeam-utils@0.8.22
+	crunchy@0.2.4
+	crypto-bigint@0.5.5
+	crypto-common@0.1.7
+	crypto-common@0.2.2
+	ctutils@0.4.2
+	curve25519-dalek-derive@0.1.1
+	curve25519-dalek@4.1.3
+	daachorse@3.0.3
+	darling@0.20.11
+	darling@0.21.3
+	darling_core@0.20.11
+	darling_core@0.21.3
+	darling_macro@0.20.11
+	darling_macro@0.21.3
+	dary_heap@0.3.9
+	data-encoding@2.11.0
+	data-url@0.3.2
+	deadpool-runtime@0.1.4
+	deadpool@0.12.3
+	defmt-macros@1.1.1
+	defmt-parser@1.0.0
+	defmt@1.1.1
+	der-parser@10.0.0
+	der@0.7.10
+	deranged@0.5.8
+	derive_arbitrary@1.4.2
+	derive_builder@0.20.2
+	derive_builder_core@0.20.2
+	derive_builder_macro@0.20.2
+	digest@0.10.7
+	digest@0.11.3
+	displaydoc@0.2.6
+	docker_credential@1.4.0
+	dotenvy@0.15.7
+	dunce@1.0.5
+	dyn-clone@1.0.20
+	ecdsa@0.16.9
+	ed25519-dalek@2.2.0
+	ed25519@2.2.3
+	either@1.16.0
+	elliptic-curve@0.13.8
+	email_address@0.2.9
+	encoding_rs@0.8.35
+	envy@0.4.2
+	equivalent@1.0.2
+	errno@0.3.14
+	esaxx-rs@0.1.10
+	etcetera@0.11.0
+	event-listener-strategy@0.5.4
+	event-listener@5.4.2
+	fallible-iterator@0.3.0
+	fallible-streaming-iterator@0.1.9
+	fancy-regex@0.17.0
+	fancy-regex@0.19.2
+	fastrand@2.5.0
+	ferroid@2.0.0
+	ff@0.13.1
+	fiat-crypto@0.2.9
+	filetime@0.2.29
+	find-msvc-tools@0.1.9
+	flate2@1.1.10
+	fluent-uri@0.4.1
+	flume@0.12.0
+	fnv@1.0.7
+	foldhash@0.2.0
+	form_urlencoded@1.2.2
+	fraction@0.17.0
+	fs_extra@1.3.0
+	futures-channel@0.3.33
+	futures-core@0.3.33
+	futures-executor@0.3.33
+	futures-intrusive@0.5.0
+	futures-io@0.3.33
+	futures-macro@0.3.33
+	futures-sink@0.3.33
+	futures-task@0.3.33
+	futures-timer@3.0.4
+	futures-util@0.3.33
+	futures@0.3.33
+	gcp_auth@0.12.7
+	generic-array@0.14.7
+	getrandom@0.2.17
+	getrandom@0.3.4
+	getrandom@0.4.3
+	glob@0.3.4
+	google-cloud-auth@1.16.0
+	google-cloud-gax-internal@0.7.18
+	google-cloud-gax@1.14.0
+	google-cloud-iam-v1@1.12.0
+	google-cloud-kms-v1@1.14.0
+	google-cloud-location@1.11.0
+	google-cloud-longrunning@1.13.0
+	google-cloud-lro@1.10.0
+	google-cloud-rpc@1.6.0
+	google-cloud-type@1.6.0
+	google-cloud-wkt@1.7.0
+	governor@0.10.4
+	group@0.13.0
+	h2@0.3.27
+	h2@0.4.15
+	half@2.7.1
+	hashbrown@0.12.3
+	hashbrown@0.16.1
+	hashbrown@0.17.1
+	hashlink@0.11.1
+	heck@0.5.0
+	hermit-abi@0.5.3
+	hex@0.4.3
+	hkdf@0.12.4
+	hkdf@0.13.0
+	hmac@0.12.1
+	hmac@0.13.0
+	home@0.5.12
+	http-body-util@0.1.4
+	http-body@0.4.6
+	http-body@1.1.0
+	http-range-header@0.4.2
+	http@0.2.12
+	http@1.4.2
+	httparse@1.10.1
+	httpdate@1.0.3
+	hybrid-array@0.4.13
+	hyper-named-pipe@0.1.1
+	hyper-rustls@0.24.2
+	hyper-rustls@0.27.9
+	hyper-timeout@0.5.2
+	hyper-util@0.1.20
+	hyper@0.14.32
+	hyper@1.10.1
+	hyperlocal@0.9.1
+	iana-time-zone-haiku@0.1.2
+	iana-time-zone@0.1.65
+	icu_collections@2.2.0
+	icu_locale_core@2.2.0
+	icu_normalizer@2.2.0
+	icu_normalizer_data@2.2.0
+	icu_properties@2.2.0
+	icu_properties_data@2.2.0
+	icu_provider@2.2.0
+	ident_case@1.0.1
+	idna@1.1.0
+	idna_adapter@1.2.2
+	indexmap@1.9.3
+	indexmap@2.14.0
+	ipnet@2.12.0
+	iter-read@1.1.0
+	itertools@0.13.0
+	itertools@0.14.0
+	itoa@1.0.18
+	jiff-core@0.1.1
+	jiff-static@0.2.37
+	jiff@0.2.37
+	jni-macros@0.22.4
+	jni-sys-macros@0.4.1
+	jni-sys@0.4.1
+	jni@0.22.4
+	jobserver@0.1.35
+	js-sys@0.3.103
+	jsonschema-regex@0.55.1
+	jsonschema-value@0.55.1
+	jsonschema@0.55.1
+	jsonwebtoken@11.1.0
+	lazy_static@1.5.0
+	libc@0.2.186
+	libm@0.2.16
+	libsqlite3-sys@0.37.0
+	linux-raw-sys@0.12.1
+	litemap@0.8.2
+	lock_api@0.4.14
+	log@0.4.33
+	lru-slab@0.1.2
+	lru@0.18.4
+	macro_rules_attribute-proc_macro@0.2.3
+	macro_rules_attribute@0.2.3
+	matchit@0.8.4
+	md-5@0.11.0
+	memchr@2.8.3
+	micromap@0.3.0
+	mime@0.3.17
+	mime_guess@2.0.5
+	minimal-lexical@0.2.1
+	miniz_oxide@0.9.1
+	mio@1.2.2
+	moka@0.12.16
+	monostate-impl@0.1.18
+	monostate@0.1.18
+	multer@3.1.0
+	nix@0.31.3
+	nom@7.1.3
+	nonzero_ext@0.3.0
+	num-bigint-dig@0.8.6
+	num-bigint@0.4.8
+	num-bigint@0.5.1
+	num-cmp@0.1.0
+	num-complex@0.4.6
+	num-conv@0.2.2
+	num-integer@0.1.46
+	num-iter@0.1.46
+	num-rational@0.4.2
+	num-traits@0.2.19
+	num@0.4.3
+	num_cpus@1.17.0
+	oid-registry@0.8.1
+	once_cell@1.21.4
+	onig@6.5.3
+	onig_sys@69.9.3
+	oorandom@11.1.5
+	openssl-probe@0.2.1
+	opentelemetry-proto@0.33.0
+	opentelemetry-semantic-conventions@0.32.1
+	opentelemetry@0.32.0
+	opentelemetry@0.33.0
+	opentelemetry_sdk@0.32.1
+	opentelemetry_sdk@0.33.0
+	outref@0.5.2
+	p256@0.13.2
+	p384@0.13.1
+	page_size@0.6.0
+	parking@2.2.1
+	parking_lot@0.12.5
+	parking_lot_core@0.9.12
+	parse-display-derive@0.9.1
+	parse-display@0.9.1
+	paste@1.0.15
+	pastey@0.2.3
+	pem-rfc7468@0.7.0
+	pem@4.0.0
+	percent-encoding@2.3.2
+	pest@2.9.1
+	pest_derive@2.9.1
+	pest_generator@2.9.1
+	pest_meta@2.9.1
+	pin-project-internal@1.1.13
+	pin-project-lite@0.2.17
+	pin-project@1.1.13
+	pin-utils@0.1.0
+	pkcs1@0.7.5
+	pkcs8@0.10.2
+	pkg-config@0.3.33
+	plotters-backend@0.3.7
+	plotters-svg@0.3.7
+	plotters@0.3.7
+	portable-atomic-util@0.2.8
+	portable-atomic@1.14.0
+	potential_utf@0.1.5
+	powerfmt@0.2.0
+	ppv-lite86@0.2.21
+	prettyplease@0.2.37
+	primeorder@0.13.6
+	proc-macro-crate@3.5.0
+	proc-macro2@1.0.107
+	process-wrap@10.0.1
+	proptest@1.11.0
+	prost-derive@0.14.4
+	prost-types@0.14.4
+	prost@0.14.4
+	py_literal@0.4.0
+	pyo3-async-runtimes@0.29.0
+	pyo3-build-config@0.29.2
+	pyo3-ffi@0.29.2
+	pyo3-macros-backend@0.29.2
+	pyo3-macros@0.29.2
+	pyo3@0.29.2
+	pythonize@0.29.0
+	qdrant-client@1.19.0
+	quick-error@1.2.3
+	quick-xml@0.41.0
+	quinn-proto@0.11.16
+	quinn-udp@0.5.15
+	quinn@0.11.11
+	quote@1.0.47
+	r-efi@5.3.0
+	r-efi@6.0.0
+	r2d2@0.8.10
+	rand@0.10.2
+	rand@0.8.7
+	rand@0.9.5
+	rand_chacha@0.3.1
+	rand_chacha@0.9.0
+	rand_core@0.10.1
+	rand_core@0.6.4
+	rand_core@0.9.5
+	rand_pcg@0.10.2
+	rand_xorshift@0.4.0
+	rayon-cond@0.4.0
+	rayon-core@1.13.0
+	rayon@1.12.0
+	rcgen@0.14.10
+	redis-test@1.0.4
+	redis@1.7.0
+	redox_syscall@0.5.18
+	ref-cast-impl@1.0.27
+	ref-cast@1.0.27
+	referencing@0.55.1
+	regex-automata@0.4.18
+	regex-lite@0.1.9
+	regex-syntax@0.8.11
+	regex@1.13.1
+	regress@0.11.1
+	relative-path@1.9.3
+	reqwest@0.12.28
+	reqwest@0.13.5
+	rfc6979@0.4.0
+	ring@0.17.14
+	rmcp@3.4.1
+	rsa@0.9.10
+	rsqlite-vfs@0.1.1
+	rstest@0.26.1
+	rstest_macros@0.26.1
+	rusqlite@0.39.0
+	rustc-hash@2.1.3
+	rustc_version@0.4.1
+	rusticata-macros@4.1.0
+	rustify@0.7.0
+	rustify_derive@0.5.5
+	rustix@1.1.5
+	rustls-native-certs@0.8.4
+	rustls-pki-types@1.15.0
+	rustls-platform-verifier-android@0.1.1
+	rustls-platform-verifier@0.7.0
+	rustls-webpki@0.101.7
+	rustls-webpki@0.103.13
+	rustls@0.21.12
+	rustls@0.23.42
+	rustversion@1.0.23
+	rusty-fork@0.3.1
+	ryu@1.0.23
+	same-file@1.0.6
+	schannel@0.1.29
+	scheduled-thread-pool@0.2.7
+	schemars@0.8.22
+	schemars@0.9.0
+	schemars@1.2.2
+	schemars_derive@0.8.22
+	schemars_derive@1.2.2
+	scopeguard@1.2.0
+	sct@0.7.1
+	sec1@0.7.3
+	security-framework-sys@2.17.0
+	security-framework@3.7.0
+	semver@1.0.28
+	serde-pickle@1.2.0
+	serde@1.0.229
+	serde_core@1.0.229
+	serde_derive@1.0.229
+	serde_derive_internals@0.29.1
+	serde_derive_internals@0.30.0
+	serde_json@1.0.150
+	serde_path_to_error@0.1.20
+	serde_repr@0.1.21
+	serde_spanned@1.1.1
+	serde_urlencoded@0.7.1
+	serde_with@3.16.1
+	serde_with_macros@3.16.1
+	serde_yaml_ng@0.10.0
+	sha1@0.10.7
+	sha1@0.11.0
+	sha1_smol@1.0.1
+	sha2@0.10.9
+	sha2@0.11.0
+	sharded-slab@0.1.7
+	shlex@2.0.1
+	signal-hook-registry@1.4.8
+	signature@2.2.0
+	simd-adler32@0.3.10
+	simd_cesu8@1.2.0
+	simdutf8@0.1.5
+	slab@0.4.12
+	smallvec@1.15.2
+	socket2@0.5.10
+	socket2@0.6.5
+	spin@0.10.1
+	spin@0.9.9
+	spinning_top@0.3.0
+	spki@0.7.3
+	spm_precompiled@0.1.4
+	sqlite-wasm-rs@0.5.5
+	sqlx-core@0.9.0
+	sqlx-macros-core@0.9.0
+	sqlx-macros@0.9.0
+	sqlx-mysql@0.9.0
+	sqlx-postgres@0.9.0
+	sqlx-sqlite@0.9.0
+	sqlx@0.9.0
+	sse-stream@0.2.6
+	stable_deref_trait@1.2.1
+	static_assertions@1.1.0
+	stringprep@0.1.5
+	strsim@0.11.1
+	structmeta-derive@0.3.0
+	structmeta@0.3.0
+	strum@0.28.0
+	strum_macros@0.28.0
+	subtle@2.6.1
+	syn@1.0.109
+	syn@2.0.119
+	syn@3.0.6
+	sync_wrapper@1.0.2
+	synstructure@0.12.6
+	synstructure@0.13.2
+	tagptr@0.2.0
+	tar@0.4.46
+	target-lexicon@0.13.5
+	tempfile@3.27.0
+	testcontainers-modules@0.15.0
+	testcontainers@0.27.3
+	thiserror-impl@1.0.69
+	thiserror-impl@2.0.19
+	thiserror@1.0.69
+	thiserror@2.0.19
+	thread_local@1.1.10
+	tiktoken-rs@0.12.0
+	time-core@0.1.9
+	time-macros@0.2.31
+	time@0.3.53
+	tinystr@0.8.3
+	tinytemplate@1.2.1
+	tinyvec@1.12.0
+	tinyvec_macros@0.1.1
+	tokenizers@0.23.2
+	tokio-macros@2.7.1
+	tokio-rustls@0.24.1
+	tokio-rustls@0.26.4
+	tokio-stream@0.1.19
+	tokio-tungstenite@0.24.0
+	tokio-util@0.7.18
+	tokio@1.53.0
+	toml@0.9.12+spec-1.1.0
+	toml_datetime@0.7.5+spec-1.1.0
+	toml_datetime@1.1.1+spec-1.1.0
+	toml_edit@0.25.13+spec-1.1.0
+	toml_parser@1.1.3+spec-1.1.0
+	toml_writer@1.1.2+spec-1.1.0
+	tonic-prost@0.14.6
+	tonic@0.14.6
+	tower-cookies@0.11.0
+	tower-http@0.6.11
+	tower-layer@0.3.3
+	tower-service@0.3.3
+	tower-sessions-core@0.14.0
+	tower-sessions-memory-store@0.14.0
+	tower-sessions-moka-store@0.15.0
+	tower-sessions@0.14.0
+	tower@0.5.3
+	tracing-attributes@0.1.31
+	tracing-core@0.1.36
+	tracing-futures@0.2.5
+	tracing-opentelemetry@0.33.0
+	tracing-subscriber@0.3.23
+	tracing@0.1.44
+	try-lock@0.2.5
+	tungstenite@0.24.0
+	typenum@1.20.1
+	typespec@1.1.0
+	typespec_client_core@1.1.0
+	typespec_macros@1.0.0
+	typify-impl@0.6.2
+	typify@0.6.1
+	ucd-trie@0.1.7
+	unarray@0.1.4
+	unicase@2.9.0
+	unicode-bidi@0.3.18
+	unicode-casefold@0.2.0
+	unicode-general-category@1.1.0
+	unicode-ident@1.0.24
+	unicode-normalization-alignments@0.1.12
+	unicode-normalization@0.1.25
+	unicode-properties@0.1.4
+	unicode-segmentation@1.13.3
+	unicode-xid@0.2.6
+	unicode_categories@0.1.1
+	unsafe-libyaml@0.2.11
+	untrusted@0.9.0
+	ureq-proto@0.6.4
+	ureq@3.4.2
+	url@2.5.8
+	urlencoding@2.1.3
+	utf-8@0.7.6
+	utf8-zero@0.8.1
+	utf8_iter@1.0.4
+	uuid-simd@0.8.0
+	uuid@1.24.0
+	valuable@0.1.1
+	vaultrs@0.8.0
+	vcpkg@0.2.15
+	veil-macros@0.3.0
+	veil@0.3.0
+	version_check@0.9.5
+	vsimd@0.8.0
+	wait-timeout@0.2.1
+	walkdir@2.5.0
+	want@0.3.1
+	wasi@0.11.1+wasi-snapshot-preview1
+	wasip2@1.0.4+wasi-0.2.12
+	wasm-bindgen-futures@0.4.76
+	wasm-bindgen-macro-support@0.2.126
+	wasm-bindgen-macro@0.2.126
+	wasm-bindgen-shared@0.2.126
+	wasm-bindgen@0.2.126
+	wasm-streams@0.4.2
+	wasm-streams@0.5.0
+	web-sys@0.3.103
+	web-time@1.1.0
+	webpki-root-certs@1.0.11
+	webpki-roots@1.0.11
+	whoami@2.1.3
+	winapi-i686-pc-windows-gnu@0.4.0
+	winapi-util@0.1.11
+	winapi-x86_64-pc-windows-gnu@0.4.0
+	winapi@0.3.9
+	windows-collections@0.3.2
+	windows-core@0.62.2
+	windows-future@0.3.2
+	windows-implement@0.60.2
+	windows-interface@0.59.3
+	windows-link@0.2.1
+	windows-numerics@0.3.1
+	windows-result@0.4.1
+	windows-strings@0.5.1
+	windows-sys@0.52.0
+	windows-sys@0.61.2
+	windows-targets@0.52.6
+	windows-threading@0.2.1
+	windows@0.62.2
+	windows_aarch64_gnullvm@0.52.6
+	windows_aarch64_msvc@0.52.6
+	windows_i686_gnu@0.52.6
+	windows_i686_gnullvm@0.52.6
+	windows_i686_msvc@0.52.6
+	windows_x86_64_gnu@0.52.6
+	windows_x86_64_gnullvm@0.52.6
+	windows_x86_64_msvc@0.52.6
+	winnow@0.7.15
+	winnow@1.0.4
+	wiremock@0.6.5
+	wit-bindgen@0.57.1
+	writeable@0.6.3
+	x509-parser@0.18.1
+	xattr@1.6.1
+	xmlparser@0.13.6
+	xxhash-rust@0.8.18
+	yasna@0.6.0
+	yoke-derive@0.8.2
+	yoke@0.8.3
+	zerocopy-derive@0.8.54
+	zerocopy@0.8.54
+	zerofrom-derive@0.1.7
+	zerofrom@0.1.8
+	zeroize@1.9.0
+	zeroize_derive@1.5.0
+	zerotrie@0.2.4
+	zerovec-derive@0.11.3
+	zerovec@0.11.6
+	zip@2.4.2
+	zlib-rs@0.6.7
+	zmij@1.0.23
+	zopfli@0.8.3
+"
+
+inherit cargo distutils-r1 pypi systemd
+
+DESCRIPTION="Library to interface with multiple LLM API providers"
+HOMEPAGE="https://github.com/BerriAI/litellm https://pypi.org/project/litellm/"
+SRC_URI+=" ${CARGO_CRATE_URIS}"
+
+LICENSE="MIT"
+# Dependent crate licenses
+LICENSE+="
+	Apache-2.0 Apache-2.0-with-LLVM-exceptions BSD Boost-1.0
+	CDLA-Permissive-2.0 ISC MIT MIT-0 Unicode-3.0 ZLIB
+"
+SLOT="0"
+KEYWORDS="~amd64"
+IUSE="systemd test"
+RESTRICT="!test? ( test )"
+
+PATCHES=( "${FILESDIR}/${P}-optional-sso.patch" )
+
+# Gentoo compatibility waivers tested by python_test():
+# importlib-metadata-9.0.0 (<9), rich-15.0.0 (<14), and
+# websockets-17.0.1 (<16), filelock 4.x (<4 upstream; API exercised below).
+# The waiver is gated on the full proxy smoke test;
+# source/metadata checks alone do not establish compatibility.
+#
+# litellm-proxy-extras carries the Prisma migrations. The shipped litellm.service
+# sets DATABASE_URL and starts the proxy without --use_prisma_db_push, so
+# PrismaManager.setup_database() takes its use_migrate branch and imports
+# litellm_proxy_extras.utils; without it that import is caught and database
+# setup silently returns False. Upstream requires the version exactly, hence
+# the ~ pin, which still admits Gentoo revisions.
+# The Python bridge no longer includes the disk-cache workspace member.
+# onig_sys's pregenerated bindings require Oniguruma >=6.9.3.
+DEPEND="
+	>=dev-libs/oniguruma-6.9.3:=
+"
+# The default service connects to the local PostgreSQL server, not libpq.
+RDEPEND="${DEPEND}
+	$(python_gen_cond_dep '
+		>=dev-python/httpx2-2.10.0[${PYTHON_USEDEP}]
+		>=dev-python/mcp-2.2.0[${PYTHON_USEDEP}]
+		<dev-python/mcp-3[${PYTHON_USEDEP}]
+		>=dev-python/soundfile-0.12.1[${PYTHON_USEDEP}]
+	')
+	dev-db/postgresql:18[server,systemd?]
+	$(python_gen_cond_dep '
+		>=dev-python/aiohttp-3.14.2[${PYTHON_USEDEP}]
+		<dev-python/aiohttp-4[${PYTHON_USEDEP}]
+		>=dev-python/certifi-2026.10.19[${PYTHON_USEDEP}]
+		>=dev-python/click-8.0.0[${PYTHON_USEDEP}]
+		<dev-python/click-9[${PYTHON_USEDEP}]
+		>=dev-python/fastuuid-0.14.0[${PYTHON_USEDEP}]
+		<dev-python/fastuuid-1[${PYTHON_USEDEP}]
+		>=dev-python/filelock-3.16.1[${PYTHON_USEDEP}]
+		<dev-python/filelock-5[${PYTHON_USEDEP}]
+		>=dev-python/httpx-0.28.0[${PYTHON_USEDEP}]
+		<dev-python/httpx-1[${PYTHON_USEDEP}]
+		dev-python/h2[${PYTHON_USEDEP}]
+		>=dev-python/importlib-metadata-8.0.0[${PYTHON_USEDEP}]
+		>=dev-python/jinja2-3.1.6[${PYTHON_USEDEP}]
+		<dev-python/jinja2-4[${PYTHON_USEDEP}]
+		>=dev-python/jsonschema-4.0.0[${PYTHON_USEDEP}]
+		<dev-python/jsonschema-5[${PYTHON_USEDEP}]
+		>=dev-python/openai-2.20.0[${PYTHON_USEDEP}]
+		<dev-python/openai-3[${PYTHON_USEDEP}]
+		>=dev-python/pydantic-2.11.0[${PYTHON_USEDEP}]
+		<dev-python/pydantic-3[${PYTHON_USEDEP}]
+		>=dev-python/packaging-24.0[${PYTHON_USEDEP}]
+		>=dev-python/python-dotenv-1.0.0[${PYTHON_USEDEP}]
+		<dev-python/python-dotenv-2[${PYTHON_USEDEP}]
+		>=dev-python/tiktoken-0.8.0[${PYTHON_USEDEP}]
+		<dev-python/tiktoken-1[${PYTHON_USEDEP}]
+		>=dev-python/apscheduler-3.11.2[${PYTHON_USEDEP}]
+		<dev-python/apscheduler-4[${PYTHON_USEDEP}]
+		>=dev-python/backoff-2.2.1[${PYTHON_USEDEP}]
+		<dev-python/backoff-3[${PYTHON_USEDEP}]
+		>=dev-python/boto3-1.43.117[${PYTHON_USEDEP}]
+		<dev-python/boto3-2[${PYTHON_USEDEP}]
+		>=dev-python/cryptography-49.0.0[${PYTHON_USEDEP}]
+		<dev-python/cryptography-51[${PYTHON_USEDEP}]
+		>=dev-python/fastapi-0.136.3[${PYTHON_USEDEP}]
+		<dev-python/fastapi-1[${PYTHON_USEDEP}]
+		>=dev-python/inquirerpy-0.3.4[${PYTHON_USEDEP}]
+		<dev-python/inquirerpy-1[${PYTHON_USEDEP}]
+		>=dev-python/orjson-3.11.6[${PYTHON_USEDEP}]
+		<dev-python/orjson-4[${PYTHON_USEDEP}]
+		>=dev-python/prisma-0.15.0[${PYTHON_USEDEP}]
+		>=dev-python/pydantic-settings-2.14.1[${PYTHON_USEDEP}]
+		<dev-python/pydantic-settings-3[${PYTHON_USEDEP}]
+		>=dev-python/pyjwt-2.13.0[${PYTHON_USEDEP}]
+		<dev-python/pyjwt-3[${PYTHON_USEDEP}]
+		>=dev-python/python-multipart-0.0.27[${PYTHON_USEDEP}]
+		<dev-python/python-multipart-1[${PYTHON_USEDEP}]
+		>=dev-python/pyyaml-6.0.3[${PYTHON_USEDEP}]
+		<dev-python/pyyaml-7[${PYTHON_USEDEP}]
+		>=dev-python/email-validator-2.0.0[${PYTHON_USEDEP}]
+		>=dev-python/expression-5.6.0[${PYTHON_USEDEP}]
+		<dev-python/expression-6[${PYTHON_USEDEP}]
+		>=dev-python/redis-7.4.1[${PYTHON_USEDEP}]
+		>=dev-python/requests-2.32.0[${PYTHON_USEDEP}]
+		<dev-python/requests-3[${PYTHON_USEDEP}]
+		>=dev-python/rich-13.9.4[${PYTHON_USEDEP}]
+		>=dev-python/starlette-1.0.1[${PYTHON_USEDEP}]
+		<dev-python/starlette-2[${PYTHON_USEDEP}]
+		>=dev-python/typing-extensions-4.13.0[${PYTHON_USEDEP}]
+		<dev-python/typing-extensions-5[${PYTHON_USEDEP}]
+		>=dev-python/uvicorn-0.33.0[${PYTHON_USEDEP}]
+		<dev-python/uvicorn-1[${PYTHON_USEDEP}]
+		>=dev-python/uvloop-0.22.1[${PYTHON_USEDEP}]
+		<dev-python/uvloop-1[${PYTHON_USEDEP}]
+		>=dev-python/websockets-15.0.1[${PYTHON_USEDEP}]
+	')
+	$(python_gen_cond_dep '
+		~sci-ml/litellm-proxy-extras-0.4.108[${PYTHON_USEDEP}]
+	')
+	$(python_gen_cond_dep '
+		>=dev-python/pydantic-2.12.0[${PYTHON_USEDEP}]
+		>=dev-python/tiktoken-0.12.0[${PYTHON_USEDEP}]
+	' 3.14)
+	>=sci-ml/huggingface_hub-0.34.0[${PYTHON_SINGLE_USEDEP}]
+	<sci-ml/huggingface_hub-2[${PYTHON_SINGLE_USEDEP}]
+	>=sci-ml/tokenizers-0.21.0[${PYTHON_SINGLE_USEDEP}]
+	<sci-ml/tokenizers-1[${PYTHON_SINGLE_USEDEP}]
+"
+BDEPEND="
+	virtual/pkgconfig
+	$(python_gen_cond_dep '~dev-util/maturin-1.15.0[${PYTHON_USEDEP}]')
+	test? ( ${RDEPEND} )
+"
+
+QA_FLAGS_IGNORED="usr/lib.*/py.*/site-packages/litellm/rust_bridge/_native.*\.so"
+
+src_unpack() {
+	cargo_src_unpack
+}
+
+pkg_setup() {
+	python-single-r1_pkg_setup
+	rust_pkg_setup
+}
+
+src_configure() {
+	export RUSTONIG_SYSTEM_LIBONIG=1
+	cargo_src_configure
+	distutils-r1_src_configure
+}
+
+python_test() {
+	cd "${T}" || die
+	local -x LITELLM_LOCAL_MODEL_COST_MAP=True
+	local -x LITELLM_TELEMETRY=False
+	local -x PYTHONPATH="${BUILD_DIR}/install$(python_get_sitedir):${PYTHONPATH}"
+	local -x PATH="${BUILD_DIR}/install/usr/bin:${PATH}"
+	local command
+	for command in litellm lite litellm-proxy; do
+		"${command}" --help >/dev/null || die "${command} --help failed"
+	done
+
+	"${EPYTHON}" - <<-'PY' || die
+		import importlib.metadata
+		import os
+		import socket
+		import subprocess
+		import time
+		import urllib.request
+
+		import litellm
+		from litellm.rust_bridge import _native
+
+		assert importlib.metadata.version("litellm") == "1.106.6"
+		# Compatibility waivers cover these majors; patch updates must not
+		# fail before the actual import, routing and proxy API smoke tests.
+		compat_versions = {
+		    "importlib-metadata": 9,
+		    "rich": 15,
+		    "websockets": 17,
+		}
+		for package, expected in compat_versions.items():
+		    actual = importlib.metadata.version(package)
+		    assert int(actual.split(".")[0]) == expected, f"{package}: expected major {expected}, got {actual}"
+		print(f"PASS: Gentoo compatibility versions {compat_versions}")
+		# filelock-4 waiver (upstream caps <4; ::gentoo ships only 4.x): the
+		# proxy CLI uses FileLock(path, timeout=, mode=) and Timeout.
+		import tempfile
+		from filelock import FileLock, Timeout
+		_fl = importlib.metadata.version("filelock")
+		assert 3 <= int(_fl.split(".")[0]) < 5, _fl
+		with tempfile.TemporaryDirectory() as _d:
+		    _path = os.path.join(_d, "x.lock")
+		    with FileLock(_path, timeout=10, mode=0o600):
+		        pass
+		    _held = FileLock(_path, timeout=0.1, mode=0o600)
+		    _held.acquire()
+		    try:
+		        FileLock(_path, timeout=0.1, mode=0o600).acquire()
+		        raise AssertionError("second lock acquired")
+		    except Timeout:
+		        pass
+		    _held.release()
+		print(f"PASS: filelock {_fl} FileLock/Timeout API")
+		assert litellm.__file__ and _native.__file__
+
+		# The guarded import in PrismaManager.setup_database()'s use_migrate
+		# branch: it swallows ImportError, so only an explicit check proves the
+		# migration payload is reachable at runtime.
+		assert importlib.metadata.version("litellm-proxy-extras") == "0.4.108"
+		from litellm_proxy_extras.utils import ProxyExtrasDBManager
+
+		migrations = ProxyExtrasDBManager._get_prisma_dir()
+		assert os.path.isfile(os.path.join(migrations, "schema.prisma"))
+		assert len(ProxyExtrasDBManager._get_migration_names(migrations)) == 213
+		print("PASS: proxy-extras migration payload reachable")
+		router = litellm.Router(
+		    model_list=[{
+		        "model_name": "local-test",
+		        "litellm_params": {
+		            "model": "openai/gpt-4o-mini",
+		            "api_key": "not-used",
+		        },
+		    }]
+		)
+		assert router.get_model_list()[0]["model_name"] == "local-test"
+
+		with socket.socket() as sock:
+		    sock.bind(("127.0.0.1", 0))
+		    port = sock.getsockname()[1]
+		env = os.environ.copy()
+		env.update({
+		    "LITELLM_LOCAL_MODEL_COST_MAP": "True",
+		    "LITELLM_TELEMETRY": "False",
+		})
+		process = subprocess.Popen(
+		    [
+		        "litellm", "--host", "127.0.0.1", "--port", str(port),
+		        "--telemetry", "False",
+		    ],
+		    stdout=subprocess.PIPE,
+		    stderr=subprocess.STDOUT,
+		    text=True,
+		    env=env,
+		)
+		try:
+		    deadline = time.monotonic() + 30
+		    while time.monotonic() < deadline:
+		        if process.poll() is not None:
+		            break
+		        try:
+		            with urllib.request.urlopen(
+		                f"http://127.0.0.1:{port}/health/liveliness", timeout=1
+		            ) as response:
+		                assert response.status == 200
+		                assert b"alive" in response.read()
+		                break
+		        except OSError:
+		            time.sleep(0.25)
+		    else:
+		        process.terminate()
+		        out, _ = process.communicate()
+		        raise AssertionError(f"proxy did not become healthy. Output:\n{out}")
+		    if process.poll() is not None:
+		        raise AssertionError(process.stdout.read())
+		finally:
+		    process.terminate()
+		    try:
+		        output, _ = process.communicate(timeout=15)
+		    except subprocess.TimeoutExpired:
+		        process.kill()
+		        output, _ = process.communicate()
+		assert "Application startup complete" in output
+		print("PASS: core, routing, entrypoints, proxy health, clean shutdown")
+	PY
+}
+
+python_install_all() {
+	distutils-r1_python_install_all
+
+	exeinto /usr/libexec
+	newexe "${FILESDIR}"/litellm-start.sh litellm-start
+
+	systemd_dounit "${FILESDIR}"/litellm.service
+
+	insinto /etc/litellm
+	newins "${FILESDIR}"/config.yaml.example config.yaml
+}
+
+pkg_postinst() {
+	elog "LiteLLM service setup instructions:"
+	elog "The default service requires postgresql-18.service (local PostgreSQL 18)."
+	elog "Remove obsolete PostgreSQL 17 After=/Requires= entries from local drop-ins;"
+	elog "keep Prisma engine and environment overrides, then run systemctl daemon-reload."
+	elog "1. To store encrypted PostgreSQL credentials for systemd LoadCredentialEncrypted:"
+	elog "   mkdir -p /etc/credstore.encrypted"
+	elog "   echo -n \"your_postgres_password\" | systemd-creds encrypt --name=litellm.database-password - /etc/credstore.encrypted/litellm.database-password"
+	elog "   chmod 0600 /etc/credstore.encrypted/litellm.database-password"
+	elog ""
+	elog "2. To generate the Prisma Python client for PostgreSQL database support:"
+	elog "   prisma generate --schema /usr/lib/python3.14/site-packages/litellm/proxy/schema.prisma"
+	elog ""
+	elog "3. Configuration file: /etc/litellm/config.yaml"
+	elog "   Start service: systemctl enable --now litellm.service"
+}
